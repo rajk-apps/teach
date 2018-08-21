@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <title>{{ lecture.title }}</title>
+
+  <link rel="stylesheet" href="{% static "teach/css/bootstrap.min.css" %}">
+  <script src="{% static "teach/js/jquery.min.js" %}"></script>
+  <script src="{% static "teach/js/popper.min.js" %}"></script>
+  <script src="{% static "teach/js/bootstrap.min.js" %}"></script>
+  <link rel="stylesheet" href="{% static "teach/css/reveal.css" %}">
+  <link rel="stylesheet" href="{% static "teach/css/theme/white.css" %}">
+  <script src="{% static "teach/js/head.min.js" %}"></script>  
+</head>
+<body>
+
+    <div class="reveal">
+      <div class="slides">
+          {% for slide in lecture.slides.all %}
+            <section>
+                <h3> {{ slide.title }} </h3>
+                <div class="container">
+                    {% for content in slide.render %}
+                        {%include "teach/contentrender.html" %}
+                    {% endfor %}
+                </div>
+            </section>
+          {% endfor %}
+      </div>
+    </div>
+    <script src="{% static "teach/js/reveal.js" %}"></script>
+    <script src="{% static "teach/js/reveal-init.js" %}"></script>
+    <!--script>
+        Reveal.initialize({
+            dependencies: [
+                // Interpret Markdown in <section> elements
+                { src: '{% static "teach/plugin/markdown/marked.js" %}', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                { src: '{% static "teach/plugin/markdown/markdown.js" %}', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                // MathJax
+                { src: '{% static "teach/plugin/math/math.js" %}', async: true }
+            ]
+        
+        });
+
+    </script -->
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Riki{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static "teach/css/bootstrap.min.css" %}">
+  <script src="{% static "teach/js/head.min.js" %}"></script>
+  {% block head %}
+  
+  {% endblock %}
+</head>
+<body>
+{% block content %}
+
+{% endblock %}
+
+<script src="{% static "teach/js/jquery.min.js" %}"></script>
+<script src="{% static "teach/js/bootstrap.min.js" %}"></script>
+<script src="{% static "teach/js/popper.min.js" %}"></script>
+
+{% block endbody %}
+
+{% endblock %}
+
+</body>
+</html>

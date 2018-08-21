@@ -1,0 +1,23 @@
+{% if content.t == "r" %}
+    <div class="row">
+        {% for ch in content.ch %}
+            {% with content=ch template_name="teach/contentrender.html" %}
+                {% include template_name %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+{% elif content.t == "c" %}
+    <div class="col-{{content.w}}">
+        {% for ch in content.ch %}
+            {% with content=ch template_name="teach/contentrender.html" %}
+                {% include template_name %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+{% elif content.t == "n" %}
+    <div style="{{content.s}}">
+        <p data-markdown>
+            {{ content.m.content.text }}
+        </p>
+    </div>
+{% endif %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Teach - home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Courses</h2>
+    {% for course in courses %}
+        <div class="row">
+            <div class="col-12">
+                <h3> <a href = "{% url 'teach:course' course.id %}">{{ course.name }}</a> </h3>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

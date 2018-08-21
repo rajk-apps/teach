@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Lectures</h2>
+    {% for lecture in course.lectures.all %}
+        <div class="row">
+            <div class="col-12">
+                <h4><a href="{% url 'teach:slideshow' lecture.id %}">{{lecture.title}}</a></h4>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

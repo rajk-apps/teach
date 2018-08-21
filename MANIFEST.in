@@ -1,0 +1,4 @@
+include LICENSE
+include README.rst
+recursive-include teach/static *
+recursive-include teach/templates *
