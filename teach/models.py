@@ -61,6 +61,8 @@ class Slide(models.Model):
     layout = models.CharField(max_length=200)
     contents = models.ManyToManyField('Content',through='SlideStructure')
 
+    hastitle = models.BooleanField(default=True)
+
     def __str__(self):
         return self.title
     

@@ -1,4 +1,3 @@
-=====
 Teach
 =====
 
@@ -25,9 +24,11 @@ Quick start
 	```python
     path('teach/', include('teach.urls')),
 	```
-4. Run `python manage.py migrate` to create the teach models.
+4. Run `python manage.py makemigrations` to create db migrations.
 
-5. Start the development server with `python manage.py runserver and visit http://127.0.0.1:8000/teach/testcreate/logic this will create a test-course to look at.
+5. Run `python manage.py migrate` to create the teach models.
 
-6. Visit http://127.0.0.1:8000/teach/ to look at it.
+6. Start the development server with `python manage.py runserver and visit http://127.0.0.1:8000/teach/testcreate/logic this will create a test-course to look at.
+
+7. Visit http://127.0.0.1:8000/teach/ to look at it.
 

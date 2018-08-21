@@ -49,7 +49,7 @@ def logiccourse(request):
             ]}
         ]"""
     
-    slide0 = models.Slide('Miről beszélünk?','prelog:q',CONT1)
+    slide0 = models.Slide('Miről beszélünk?','prelog:q',CONT1,hastitle=False)
     
     slide1 = models.Slide('Ítéletlogika','prelog:nullog',R2)
     

@@ -19,7 +19,9 @@
       <div class="slides">
           {% for slide in lecture.slides.all %}
             <section>
-                <h3> {{ slide.title }} </h3>
+                {% if slide.hastitle %}
+                    <h3> {{ slide.title }} </h3>
+                {% endif %}
                 <div class="container">
                     {% for content in slide.render %}
                         {%include "teach/contentrender.html" %}
@@ -31,18 +33,5 @@
     </div>
     <script src="{% static "teach/js/reveal.js" %}"></script>
     <script src="{% static "teach/js/reveal-init.js" %}"></script>
-    <!--script>
-        Reveal.initialize({
-            dependencies: [
-                // Interpret Markdown in <section> elements
-                { src: '{% static "teach/plugin/markdown/marked.js" %}', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-                { src: '{% static "teach/plugin/markdown/markdown.js" %}', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-                // MathJax
-                { src: '{% static "teach/plugin/math/math.js" %}', async: true }
-            ]
-        
-        });
-
-    </script -->
 </body>
 </html>
