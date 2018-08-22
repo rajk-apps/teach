@@ -7,7 +7,7 @@ and their content.
 Quick start
 -----------
 
-1. install the app using pip:
+1. Install the app using pip:
  	
  	either clone the repo and install from the directory of `setup.py`
 
@@ -37,7 +37,12 @@ Quick start
 
 5. Run `python manage.py migrate` to create the teach models.
 
-6. Start the development server with `python manage.py runserver` and visit http://127.0.0.1:8000/teach/testcreate/logic this will create a test-course to look at.
+6. Get a course by installing and then importing one, for example:
+	
+	```
+	pip install git+https://github.com/endremborza/rajk-prelogika
+	python manage.py shell --command="import teach.admin; teach.admin.import_course('rikicourses.rajkprelogika')"
+	```
 
-7. Visit http://127.0.0.1:8000/teach/ to look at it.
+7. Start the development server with `python manage.py runserver` and visit http://127.0.0.1:8000/teach/ to look at it.
 
