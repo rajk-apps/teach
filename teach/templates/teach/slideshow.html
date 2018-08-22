@@ -3,7 +3,7 @@
 {% load static %}
 <head>
   <meta charset="utf-8">
-  <title>{{ lecture.title }}</title>
+  <title>{{ lecture_title }}</title>
 
   <link rel="stylesheet" href="{% static "teach/css/bootstrap.min.css" %}">
   <script src="{% static "teach/js/jquery.min.js" %}"></script>
@@ -17,17 +17,34 @@
 
     <div class="reveal">
       <div class="slides">
-          {% for slide in lecture.slides.all %}
-            <section>
-                {% if slide.hastitle %}
-                    <h3> {{ slide.title }} </h3>
-                {% endif %}
-                <div class="container">
-                    {% for content in slide.render %}
-                        {%include "teach/contentrender.html" %}
-                    {% endfor %}
-                </div>
-            </section>
+          {% for structure in structures %}
+            {% if structure.multislide %}
+                <section>
+                {% for slide in structure.slides %}
+                    <section>
+                        {% if slide.hastitle %}
+                            <h3> {{ slide.title }} </h3>
+                        {% endif %}
+                        <div class="container">
+                            {% for content in slide.render %}
+                                {%include "teach/contentrender.html" %}
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endfor %}
+                </section>
+            {% else %}
+                <section>
+                    {% if structure.slide.hastitle %}
+                        <h3> {{ structure.slide.title }} </h3>
+                    {% endif %}
+                    <div class="container">
+                        {% for content in structure.slide.render %}
+                            {%include "teach/contentrender.html" %}
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
           {% endfor %}
       </div>
     </div>

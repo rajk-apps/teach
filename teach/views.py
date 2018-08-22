@@ -16,4 +16,22 @@ def course(request,course_id):
 #@login_required
 def slideshow(request,lecture_id):
     lecture = get_object_or_404(Lecture, id=lecture_id)
-    return render(request, 'teach/slideshow.html', {'lecture': lecture})
+    prevo = -1
+    structures = []
+    for lstructure in lecture.lecturestructure_set.order_by(
+                       'ordernum','subordernum'):
+        if lstructure.multislide:
+            if lstructure.ordernum == prevo:
+                structures[-1]['slides'].append(lstructure.slide)
+            else:
+                structures.append({'multislide':True,
+                               'slides':[lstructure.slide]
+                               })
+        else:
+            structures.append({'multislide':False,
+                           'slide':lstructure.slide})
+        prevo = lstructure.ordernum
+    return render(request, 'teach/slideshow.html',
+                  {'lecture_title': lecture.title,
+                   'structures': structures
+                   })
