@@ -7,9 +7,18 @@ and their content.
 Quick start
 -----------
 
-1. install the app using pip from the directory of `setup.py`
+1. install the app using pip:
+ 	
+ 	either clone the repo and install from the directory of `setup.py`
 
-	`pip install .`
+	```
+	git clone https://github.com/endremborza/riki-teach.git
+	pip install riki-teach/
+	```
+	
+	or simply install from github:
+	
+	`pip install git+https://github.com/endremborza/riki-teach.git`
 
 2. Add "teach" to your INSTALLED_APPS setting like this:
 
