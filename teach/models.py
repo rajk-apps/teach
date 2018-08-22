@@ -7,7 +7,7 @@ class Course(models.Model):
     """
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=2000)
-    id = models.CharField(max_length=20,primary_key=True)
+    id = models.CharField(max_length=30,primary_key=True)
     lectures = models.ManyToManyField('Lecture',through='CourseStructure')
 
     def __str__(self):
@@ -26,7 +26,7 @@ class Lecture(models.Model):
     """
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    id = models.CharField(max_length=20,primary_key=True)
+    id = models.CharField(max_length=50,primary_key=True)
     slides = models.ManyToManyField('Slide',through='LectureStructure')
 
     def __str__(self):
@@ -57,7 +57,7 @@ class Slide(models.Model):
     Slide class
     """
     title = models.CharField(max_length=200)
-    id = models.CharField(max_length=20,primary_key=True)
+    id = models.CharField(max_length=50,primary_key=True)
     layout = models.CharField(max_length=200)
     contents = models.ManyToManyField('Content',through='SlideStructure')
 
@@ -75,7 +75,7 @@ class Content(models.Model):
     Content class
     """
     title = models.CharField(max_length=200)
-    id = models.CharField(max_length=30,primary_key=True)
+    id = models.CharField(max_length=50,primary_key=True)
     text = models.CharField(max_length=2000)
     
     MARKUP_CHOICES = [('md','md'),('html','html')]
@@ -124,7 +124,7 @@ class Topic(models.Model):
     """
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=2000)
-    id = models.CharField(max_length=20,primary_key=True)
+    id = models.CharField(max_length=30,primary_key=True)
 
     def __str__(self):
         return self.name
@@ -134,7 +134,7 @@ class Chapter(models.Model):
     Chapter class
     """
     name = models.CharField(max_length=200)
-    id = models.CharField(max_length=20,primary_key=True)
+    id = models.CharField(max_length=50,primary_key=True)
     topic = models.ForeignKey('Topic', on_delete=models.CASCADE)
 
     def __str__(self):

@@ -15,7 +15,6 @@ setup(
     license='MIT License',
     description='A simple Django app for teaching.',
     long_description=README,
-    url='https://www.example.com/',
     author='Endre Márk Borza',
     author_email='endremborza@gmail.com',
     classifiers=[

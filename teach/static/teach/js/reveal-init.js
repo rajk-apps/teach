@@ -138,7 +138,7 @@ Reveal.initialize({
         //{ src: 'plugin/zoom-js/zoom.js', async: true },
 
         // Speaker notes
-        //{ src: 'plugin/notes/notes.js', async: true },
+        { src: '../../static/teach/plugin/notes/notes.js', async: true },
 
         // MathJax
         { src: '../../static/teach/plugin/math/math.js', async: true }

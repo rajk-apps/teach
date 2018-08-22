@@ -51,7 +51,7 @@ def logiccourse(request):
     
     slide0 = models.Slide('Miről beszélünk?','prelog:q',CONT1,hastitle=False)
     
-    slide1 = models.Slide('Ítéletlogika','prelog:nullog',R2)
+    slide1 = models.Slide('Ítéletlogika','prelog:nullog',R2 % ("font-size:1.7vw;","font-size:1.4vw;"))
     
     slide2 = models.Slide('Műveletek','prelog:muvs',CONT1)
     
@@ -146,10 +146,14 @@ olyan formulák amik a bennük szereplő kifejezések igazságértékétől füg
 ''')
     
     content_tautology_list = models.Content('Tételek','logic:tautlist','''
-- asszociativitás $A \lor (B \lor C) \Leftrightarrow (A \lor B) \lor C$
-- disztributivitás $A \land (B \lor C) \Leftrightarrow (A \land B) \lor (A \land C)$
-- De Morgan szabály $\\neg (A \lor B) \Leftrightarrow \\neg A \land \\neg B$
-- szillogizmus $(A \Rightarrow B) \land (B \Rightarrow C) \Rightarrow (A \Rightarrow C)$
+- asszociativitás:
+  - $A \lor (B \lor C) \Leftrightarrow (A \lor B) \lor C$
+- disztributivitás:
+  - $A \land (B \lor C) \Leftrightarrow (A \land B) \lor (A \land C)$
+- De Morgan szabály:
+  - $\\neg (A \lor B) \Leftrightarrow \\neg A \land \\neg B$
+- szillogizmus:
+  - $(A \Rightarrow B) \land (B \Rightarrow C) \Rightarrow (A \Rightarrow C)$
 ''')
     
     content_tautology_q = models.Content('Tétel-e?','logic:tautq','''
