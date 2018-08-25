@@ -1,5 +1,5 @@
 //Reveal.initialize();
-Reveal.initialize({
+Reveal.configure({
 
     // Display presentation control arrows
     controls: true,
@@ -122,26 +122,4 @@ Reveal.initialize({
 
     // The display mode that will be used to show slides
     display: 'block',
-    
-    dependencies: [
-        // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/
-        //{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
-
-        // Interpret Markdown in <section> elements
-        { src: '../../static/teach/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-        { src: '../../static/teach/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-
-        // Syntax highlight for <code> elements
-        //{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-
-        // Zoom in and out with Alt+click
-        //{ src: 'plugin/zoom-js/zoom.js', async: true },
-
-        // Speaker notes
-        { src: '../../static/teach/plugin/notes/notes.js', async: true },
-
-        // MathJax
-        { src: '../../static/teach/plugin/math/math.js', async: true }
-    ]
-
 });

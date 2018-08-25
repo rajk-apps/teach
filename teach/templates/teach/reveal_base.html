@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}{% endblock %}</title>
+
+  <link rel="stylesheet" href="{% static "teach/css/bootstrap.min.css" %}">
+  <script src="{% static "teach/js/jquery.min.js" %}"></script>
+  <script src="{% static "teach/js/popper.min.js" %}"></script>
+  <script src="{% static "teach/js/bootstrap.min.js" %}"></script>
+  <link rel="stylesheet" href="{% static "teach/css/reveal.css" %}">
+  <link rel="stylesheet" href="{% static "teach/css/theme/white.css" %}">
+  <script src="{% static "teach/js/head.min.js" %}"></script>  
+</head>
+<body>
+
+    <div class="reveal">
+      <div class="slides">
+          {% block slides %}
+          {% endblock %}
+      </div>
+    </div>
+    <script src="{% static "teach/js/reveal.js" %}"></script>
+    <script>
+    Reveal.initialize({ 
+        dependencies: [
+            // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/
+            //{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+    
+            // Interpret Markdown in <section> elements
+            { src: '{% static "teach/plugin/markdown/marked.js" %}', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+            { src: '{% static "teach/plugin/markdown/markdown.js" %}', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    
+            // Syntax highlight for <code> elements
+            //{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+    
+            // Zoom in and out with Alt+click
+            //{ src: 'plugin/zoom-js/zoom.js', async: true },
+    
+            // Speaker notes
+            { src: '{% static "teach/plugin/notes/notes.js" %}', async: true },
+    
+            // MathJax
+            { src: '{% static "teach/plugin/math/math.js" %}', async: true }
+        ]
+     });
+    </script>
+    <script src="{% static "teach/js/reveal-init.js" %}"></script>
+</body>
+</html>

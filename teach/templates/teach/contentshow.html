@@ -1,0 +1,22 @@
+{% extends 'teach/reveal_base.html' %}
+
+{% block title %}{{ level1.name }} {% endblock %}
+
+{% block slides %}
+{% for level2 in level1.content %}
+      <section>
+          <section>
+              <h2>{{ level2.name }}</h2>
+              <p>{{ level2.description }}</p>
+          </section>
+          {% for level3 in level2.content %}
+              <section>
+                  <h3> {{ level3.title }} </h3>
+                  <p data-markdown>
+                      {{ level3.remove_animation }}
+                  </p>
+              </section>
+          {% endfor %}
+      </section>
+{% endfor %}
+{% endblock %}

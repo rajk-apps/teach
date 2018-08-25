@@ -1,54 +1,35 @@
-<!DOCTYPE html>
-<html>
-{% load static %}
-<head>
-  <meta charset="utf-8">
-  <title>{{ lecture_title }}</title>
+{% extends 'teach/reveal_base.html' %}
 
-  <link rel="stylesheet" href="{% static "teach/css/bootstrap.min.css" %}">
-  <script src="{% static "teach/js/jquery.min.js" %}"></script>
-  <script src="{% static "teach/js/popper.min.js" %}"></script>
-  <script src="{% static "teach/js/bootstrap.min.js" %}"></script>
-  <link rel="stylesheet" href="{% static "teach/css/reveal.css" %}">
-  <link rel="stylesheet" href="{% static "teach/css/theme/white.css" %}">
-  <script src="{% static "teach/js/head.min.js" %}"></script>  
-</head>
-<body>
+{% block title %}{{ lecture_title }} {% endblock %}
 
-    <div class="reveal">
-      <div class="slides">
-          {% for structure in structures %}
-            {% if structure.multislide %}
-                <section>
-                {% for slide in structure.slides %}
-                    <section>
-                        {% if slide.hastitle %}
-                            <h3> {{ slide.title }} </h3>
-                        {% endif %}
-                        <div class="container">
-                            {% for content in slide.render %}
-                                {%include "teach/contentrender.html" %}
-                            {% endfor %}
-                        </div>
-                    </section>
-                {% endfor %}
-                </section>
-            {% else %}
-                <section>
-                    {% if structure.slide.hastitle %}
-                        <h3> {{ structure.slide.title }} </h3>
-                    {% endif %}
-                    <div class="container">
-                        {% for content in structure.slide.render %}
-                            {%include "teach/contentrender.html" %}
-                        {% endfor %}
-                    </div>
-                </section>
-            {% endif %}
-          {% endfor %}
-      </div>
-    </div>
-    <script src="{% static "teach/js/reveal.js" %}"></script>
-    <script src="{% static "teach/js/reveal-init.js" %}"></script>
-</body>
-</html>
+{% block slides %}
+{% for structure in structures %}
+  {% if structure.multislide %}
+      <section>
+      {% for slide in structure.slides %}
+          <section>
+              {% if slide.hastitle %}
+                  <h3> {{ slide.title }} </h3>
+              {% endif %}
+              <div class="container">
+                  {% for content in slide.render %}
+                      {%include "teach/contentrender.html" %}
+                  {% endfor %}
+              </div>
+          </section>
+      {% endfor %}
+      </section>
+  {% else %}
+      <section>
+          {% if structure.slide.hastitle %}
+              <h3> {{ structure.slide.title }} </h3>
+          {% endif %}
+          <div class="container">
+              {% for content in structure.slide.render %}
+                  {%include "teach/contentrender.html" %}
+              {% endfor %}
+          </div>
+      </section>
+  {% endif %}
+{% endfor %}
+{% endblock %}
