@@ -1,16 +1,36 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ course.name }}{% endblock %}
+{% block title %}{{ course_name }}{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2>Lectures</h2>
-    {% for lecture in course.lectures.all %}
-        <div class="row">
-            <div class="col-12">
-                <h4><a href="{% url 'teach:slideshow' lecture.id %}">{{lecture.title}}</a></h4>
-            </div>
+    <div class="row">
+        <div class="col-6">
+            <h2>Lectures</h2>
+            {% for cs in course_structure %}
+                <div class="row">
+                    <div class="col-12">
+                        <h4> {{forloop.counter}}. - <a href="{% url 'teach:slideshow' cs.lecture.id %}">{{cs.lecture.title}}</a></h4>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+        <div class="col-6">
+            <h2>Content</h2>
+            {% for level1 in content %}
+                <h4>{{level1.name}}</h4>
+                    {% for level2 in level1.content %}
+                        <b>{{level2.name}}</b>
+                        <ul>
+                        {% for level3 in level2.content %}
+                            <li> {{level3.title}} </li>
+                            <div>
+                        {% endfor %}
+                        </ul>
+                    {% endfor %}
+            {% endfor %}
+            
+        </div>
+    </div>
 </div>
 {% endblock %}

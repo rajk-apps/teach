@@ -12,7 +12,8 @@ def import_course(course_loc):
     
     course = models.Course(course_module.course_info['name'],
                            course_module.course_info['description'],
-                           course_module.course_info['course_id'])
+                           course_module.course_info['course_id'],
+                           course_module.course_info['version'])
     
     try:
         past = models.Course.objects.get(pk=course.id)

@@ -8,18 +8,75 @@ class Course(models.Model):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=2000)
     id = models.CharField(max_length=30,primary_key=True)
+    version = models.CharField(max_length=15)
+
     lectures = models.ManyToManyField('Lecture',through='CourseStructure')
+    additional_content = models.ManyToManyField('Content',through='AdditionalContent')
 
     def __str__(self):
         return self.name
-    
-    def render(self):
-        """
-        Create the necessary html templates for the slides in the course
-        in a folder within the templates
-        """
-        pass
 
+
+class Content(models.Model):
+    """
+    Content class, the basic building block for all courses
+    """
+    title = models.CharField(max_length=200)
+    id = models.CharField(max_length=50,primary_key=True)
+    text = models.CharField(max_length=2000)
+    
+    MARKUP_CHOICES = [('md','md'),('html','html')]
+    
+    markup = models.CharField(max_length=4,
+                              choices=MARKUP_CHOICES,
+                              default='md')
+    
+    CONTENT_TYPES = [('def','Definition'),
+                      ('list','List'),
+                      ('task','Task'),
+                      ('ex','Example'),
+                      ('q','Question'),
+                      ('misc','Misc')]
+    
+    type = models.CharField(max_length=4,
+                            choices=CONTENT_TYPES,
+                            default='misc')
+    
+    topic = models.ForeignKey('Topic',on_delete=models.SET_NULL,null=True)
+    
+    related_content = models.ManyToManyField('Content')
+    
+    citation = models.CharField(max_length=300,default="",blank=True)
+    citation_link = models.CharField(max_length=300,default="",blank=True)
+    
+    def __str__(self):
+        return self.title
+
+    def remove_animation(self):
+        return re.sub('<!--.*?-->','',self.text)
+
+
+#Classes organizing content into lectures:
+
+class CourseStructure(models.Model):
+    """
+    Course structure class connecting lectures
+    with courses
+    """
+    ordernum = models.PositiveIntegerField()
+    lecture = models.ForeignKey('Lecture', on_delete=models.CASCADE)
+    course = models.ForeignKey('Course', on_delete=models.CASCADE)
+
+class AdditionalContent(models.Model):
+    """
+    Additinal content class connecting course
+    with additional content
+    """
+    afterlecture = models.IntegerField()
+    content = models.ForeignKey('Content', on_delete=models.CASCADE)
+    course = models.ForeignKey('Course', on_delete=models.CASCADE)
+    
+    
 class Lecture(models.Model):
     """
     Lecture class
@@ -31,15 +88,6 @@ class Lecture(models.Model):
 
     def __str__(self):
         return self.title
-
-class CourseStructure(models.Model):
-    """
-    Course structure class connecting lectures
-    with courses
-    """
-    ordernum = models.PositiveIntegerField()
-    lecture = models.ForeignKey('Lecture', on_delete=models.CASCADE)
-    course = models.ForeignKey('Course', on_delete=models.CASCADE)
 
 class LectureStructure(models.Model):
     """
@@ -70,38 +118,6 @@ class Slide(models.Model):
         slides = self.slidestructure_set.order_by('ordernum')
         return eval(self.layout,{'s':slides})
 
-class Content(models.Model):
-    """
-    Content class
-    """
-    title = models.CharField(max_length=200)
-    id = models.CharField(max_length=50,primary_key=True)
-    text = models.CharField(max_length=2000)
-    
-    MARKUP_CHOICES = [('md','md'),('html','html')]
-    
-    markup = models.CharField(max_length=4,
-                              choices=MARKUP_CHOICES,
-                              default='md')
-    
-    CONTENT_TYPES = [('def','Definition'),
-                      ('list','List'),
-                      ('task','Task'),
-                      ('ex','Example'),
-                      ('q','Question'),
-                      ('misc','Misc')]
-    
-    type = models.CharField(max_length=4,
-                            choices=CONTENT_TYPES,
-                            default='misc')
-    
-    related_content = models.ManyToManyField('Content')
-    
-    def __str__(self):
-        return self.title
-
-    def remove_animation(self):
-        return re.sub('<!--.*?-->','',self.text)
 
 class SlideStructure(models.Model):
     """
@@ -116,7 +132,7 @@ class SlideStructure(models.Model):
     def __str__(self):
         return str(self.ordernum)
 
-#Different structure, add later:
+#Organizing content topically:
 
 class Topic(models.Model):
     """
@@ -129,13 +145,3 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
-class Chapter(models.Model):
-    """
-    Chapter class
-    """
-    name = models.CharField(max_length=200)
-    id = models.CharField(max_length=50,primary_key=True)
-    topic = models.ForeignKey('Topic', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
