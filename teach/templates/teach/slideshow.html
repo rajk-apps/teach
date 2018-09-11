@@ -3,13 +3,16 @@
 {% block title %}{{ lecture_title }} {% endblock %}
 
 {% block slides %}
+    <section>
+        <h1>{{ lecture_title }} </h1>
+    </section>
 {% for structure in structures %}
   {% if structure.multislide %}
       <section>
       {% for slide in structure.slides %}
           <section>
               {% if slide.hastitle %}
-                  <h3> {{ slide.title }} </h3>
+                  <h4> {{ slide.title }} </h4>
               {% endif %}
               <div class="container">
                   {% for content in slide.render %}
@@ -22,7 +25,7 @@
   {% else %}
       <section>
           {% if structure.slide.hastitle %}
-              <h3> {{ structure.slide.title }} </h3>
+              <h4> {{ structure.slide.title }} </h4>
           {% endif %}
           <div class="container">
               {% for content in structure.slide.render %}

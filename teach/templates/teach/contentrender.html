@@ -16,11 +16,14 @@
     </div>
 {% elif content.t == "n" %}
     <div style="{{content.s}}">
+        {% if content.m.print_title %}
+            <h4>{{ content.m.content.title }}</h4>
+        {% endif %}
         <p data-markdown>
             {% if content.m.animate %}
-                {{ content.m.content.text }}
+{{ content.m.content.text }}
             {% else %}
-                {{ content.m.content.remove_animation }}
+{{ content.m.content.remove_animation }}
             {% endif %}
         </p>
     </div>
