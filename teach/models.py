@@ -150,6 +150,7 @@ class SlideStructure(models.Model):
     css_style = models.CharField(max_length=100,default="",blank=True)
     animate = models.BooleanField(default=True)
     print_title = models.BooleanField(default=False)
+    fragment_no = models.SmallIntegerField(default=0)
 
     def __str__(self):
         return " - ".join([self.slide.title,self.content.title,str(self.ordernum)])
