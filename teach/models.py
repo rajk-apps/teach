@@ -115,7 +115,7 @@ class Slide(models.Model):
     
     DEF_LAYOUT = """[{'t':'r','ch':[
         {'t':'c','w':12,'ch':[
-                {'t':'n','s':'',
+                {'t':'n',
                  'm':s[0]}
                 ]}
             ]}
@@ -147,6 +147,7 @@ class SlideStructure(models.Model):
     slide = models.ForeignKey(Slide, on_delete=models.CASCADE)
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
     ordernum = models.PositiveIntegerField()
+    css_style = models.CharField(max_length=100,default="",blank=True)
     animate = models.BooleanField(default=True)
     print_title = models.BooleanField(default=False)
 

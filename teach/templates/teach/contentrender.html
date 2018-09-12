@@ -15,7 +15,7 @@
         {% endfor %}
     </div>
 {% elif content.t == "n" %}
-    <div style="{{content.s}}">
+    <div style="{{content.m.css_style}}">
         {% if content.m.print_title %}
             <h4>{{ content.m.content.title }}</h4>
         {% endif %}
