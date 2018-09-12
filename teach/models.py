@@ -23,7 +23,7 @@ class Content(models.Model):
     """
     title = models.CharField(max_length=200)
     id = models.CharField(max_length=50,primary_key=True)
-    text = models.CharField(max_length=2000)
+    text = models.TextField(max_length=2000)
     
     MARKUP_CHOICES = [('md','md'),('html','html')]
     
@@ -44,13 +44,13 @@ class Content(models.Model):
     
     topic = models.ForeignKey('Topic',on_delete=models.SET_NULL,null=True)
     
-    related_content = models.ManyToManyField('Content')
+    related_content = models.ManyToManyField('Content',blank=True)
     
     citation = models.CharField(max_length=300,default="",blank=True)
     citation_link = models.CharField(max_length=300,default="",blank=True)
     
     def __str__(self):
-        return self.title
+        return "%s - %s (%s)" % (self.type,self.title,self.id)
 
     def remove_animation(self):
         return re.sub('<!--.*?-->','',self.text)
@@ -67,6 +67,9 @@ class CourseStructure(models.Model):
     lecture = models.ForeignKey('Lecture', on_delete=models.CASCADE)
     course = models.ForeignKey('Course', on_delete=models.CASCADE)
 
+    def __str(self):
+        return self.course.name + " - " + self.lecture.title
+        
 class AdditionalContent(models.Model):
     """
     Additinal content class connecting course
@@ -76,6 +79,8 @@ class AdditionalContent(models.Model):
     content = models.ForeignKey('Content', on_delete=models.CASCADE)
     course = models.ForeignKey('Course', on_delete=models.CASCADE)
     
+    def __str__(self):
+        return self.course.name + " - " + self.content.title
     
 class Lecture(models.Model):
     """
@@ -100,23 +105,38 @@ class LectureStructure(models.Model):
     multislide = models.BooleanField(default=False)
     subordernum = models.PositiveIntegerField(default=0)
 
+    def __str__(self):
+        return " - ".join([self.lecture.title,self.slide.title,str(self.ordernum)])
+
 class Slide(models.Model):
     """
     Slide class
     """
+    
+    DEF_LAYOUT = """[{'t':'r','ch':[
+        {'t':'c','w':12,'ch':[
+                {'t':'n',
+                 'm':s[0]}
+                ]}
+            ]}
+        ]"""
+    
     title = models.CharField(max_length=200)
     id = models.CharField(max_length=50,primary_key=True)
-    layout = models.CharField(max_length=200)
+    layout = models.TextField(default=DEF_LAYOUT)
     contents = models.ManyToManyField('Content',through='SlideStructure')
 
     hastitle = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.title
+        return self.id + " - " + self.title
     
     def render(self):
         slides = self.slidestructure_set.order_by('ordernum')
-        return eval(self.layout,{'s':slides})
+        try:
+            return eval(self.layout,{'s':slides})
+        except:
+            return []
 
 
 class SlideStructure(models.Model):
@@ -127,10 +147,12 @@ class SlideStructure(models.Model):
     slide = models.ForeignKey(Slide, on_delete=models.CASCADE)
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
     ordernum = models.PositiveIntegerField()
+    css_style = models.CharField(max_length=100,default="",blank=True)
     animate = models.BooleanField(default=True)
+    print_title = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.ordernum)
+        return " - ".join([self.slide.title,self.content.title,str(self.ordernum)])
 
 #Organizing content topically:
 
