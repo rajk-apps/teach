@@ -1,21 +1,12 @@
 from django.db import models
 import re
 
-class Course(models.Model):
-    """
-    Course class
-    """
-    name = models.CharField(max_length=200)
-    description = models.CharField(max_length=2000)
-    id = models.CharField(max_length=30,primary_key=True)
-    version = models.CharField(max_length=15)
-
-    lectures = models.ManyToManyField('Lecture',through='CourseStructure')
-    additional_content = models.ManyToManyField('Content',through='AdditionalContent')
-
+class ContentType(models.Model):
+    id = models.CharField(max_length=5,primary_key=True)
+    name = models.CharField(max_length=40)
+    
     def __str__(self):
         return self.name
-
 
 class Content(models.Model):
     """
@@ -31,16 +22,7 @@ class Content(models.Model):
                               choices=MARKUP_CHOICES,
                               default='md')
     
-    CONTENT_TYPES = [('def','Definition'),
-                      ('list','List'),
-                      ('task','Task'),
-                      ('ex','Example'),
-                      ('q','Question'),
-                      ('misc','Misc')]
-    
-    type = models.CharField(max_length=4,
-                            choices=CONTENT_TYPES,
-                            default='misc')
+    type = models.ForeignKey('ContentType',on_delete=models.SET_NULL,null=True)
     
     topic = models.ForeignKey('Topic',on_delete=models.SET_NULL,null=True)
     
@@ -48,13 +30,38 @@ class Content(models.Model):
     
     citation = models.CharField(max_length=300,default="",blank=True)
     citation_link = models.CharField(max_length=300,default="",blank=True)
-    
+        
     def __str__(self):
         return "%s - %s (%s)" % (self.type,self.title,self.id)
 
     def remove_animation(self):
         return re.sub('<!--.*?-->','',self.text)
 
+    def upto_level(self,level):
+        out = self.text
+        for ss in [x[0] for x in 
+                  re.findall('(\s*.*<!--.*?level=(\d+)*.*?-->)',
+                     self.text) if float(x[1]) > level]:
+            out = out.replace(ss,"")
+        return out
+
+
+class Course(models.Model):
+    """
+    Course class
+    """
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=2000)
+    id = models.CharField(max_length=30,primary_key=True)
+    version = models.CharField(max_length=15)
+
+    lectures = models.ManyToManyField('Lecture',through='CourseStructure')
+    additional_content = models.ManyToManyField('Content',through='AdditionalContent')
+
+    content_types_selected = models.ManyToManyField('ContentType',blank=True)
+
+    def __str__(self):
+        return self.name
 
 #Classes organizing content into lectures:
 
@@ -147,14 +154,28 @@ class SlideStructure(models.Model):
     slide = models.ForeignKey(Slide, on_delete=models.CASCADE)
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
     ordernum = models.PositiveIntegerField()
+    
     css_style = models.CharField(max_length=100,default="",blank=True)
     animate = models.BooleanField(default=True)
     print_title = models.BooleanField(default=False)
     fragment_no = models.SmallIntegerField(default=0)
+    upto_level = models.SmallIntegerField(default=0)
 
     def __str__(self):
         return " - ".join([self.slide.title,self.content.title,str(self.ordernum)])
 
+    def render(self):
+        
+        if self.upto_level > 0:
+            outtext = self.content.upto_level(self.upto_level)
+        else:
+            outtext = self.content.text
+        
+        if self.animate:
+            return outtext
+        else:
+            return re.sub('<!--.*?-->','',outtext)
+        
 #Organizing content topically:
 
 class Topic(models.Model):

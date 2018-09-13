@@ -20,11 +20,7 @@
             <h4>{{ content.m.content.title }}</h4>
         {% endif %}
         <p data-markdown>
-            {% if content.m.animate %}
-{{ content.m.content.text }}
-            {% else %}
-{{ content.m.content.remove_animation }}
-            {% endif %}
+{{ content.m.render }}
         </p>
     </div>
 {% endif %}
