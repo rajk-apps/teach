@@ -10,9 +10,9 @@
               <p>{{ level2.description }}</p>
           </section>
           {% for level3 in level2.content %}
-              <section>
+              <section id="{{ level3.id }}">
                 <div class="row">
-                    <div class="col-10" style="font-size:1.3vw;">
+                    <div class="col-10" style="font-size:1.7vw;">
                       <h3> {{ level3.title }} </h3>
                       <p data-markdown>
 {{ level3.remove_animation }}

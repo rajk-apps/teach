@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 #from django.contrib.auth.decorators import login_required
 
-from .models import Course,Lecture,Topic
+from .models import Course,Lecture,Topic,Content
 
 #@login_required
 def home(request):
@@ -58,8 +58,7 @@ def contentshow(request,course_id,type_id):
                                       'content':[elem],
                                       'eids':[elem.id]})
         
-    ac_i = 0
-    
+    ac_i = 0    
     sc_i = 0
     
     while ac_i < len(acl) and sc_i < len(scl):
@@ -81,6 +80,28 @@ def contentshow(request,course_id,type_id):
     
     return render(request, 'teach/contentshow.html',
                   {'level1':level1})
+
+#@login_required
+def topicshow(request,topic_id):
+    contents = Content.objects.filter(topic__pk=topic_id).order_by('type')
+    topic = get_object_or_404(Topic, id=topic_id)
+    
+    level1 = {'name':topic.name,'content':[]}
+    
+    for elem in contents:
+        added = False
+        for l2 in level1['content']:
+            if l2['name'] == elem.type.name:
+                l2['content'].append(elem)
+                added = True
+        if not added:
+            level1['content'].append({'name':elem.type.name,
+                                  'content':[elem]})
+    
+    
+    return render(request, 'teach/contentshow.html',
+                  {'level1':level1})
+
 
 #@login_required
 def slideshow(request,lecture_id):
