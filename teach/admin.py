@@ -12,6 +12,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(models.Content)
 class ContentAdmin(admin.ModelAdmin):
+    ordering = ['topic','type','title']
     #formfield_overrides = {
         #models.CharField: {'widget': TextInput(attrs={'size':'20'})},
         #dbmodels.TextField: {'widget': Textarea(attrs={'rows':20, 'cols':40})},

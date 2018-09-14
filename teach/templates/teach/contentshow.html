@@ -11,10 +11,38 @@
           </section>
           {% for level3 in level2.content %}
               <section>
-                  <h3> {{ level3.title }} </h3>
-                  <p data-markdown>
-                      {{ level3.remove_animation }}
-                  </p>
+                <div class="row">
+                    <div class="col-10" style="font-size:1.3vw;">
+                      <h3> {{ level3.title }} </h3>
+                      <p data-markdown>
+{{ level3.remove_animation }}
+                      </p>
+                    </div>
+                    <div class="col-2" style="font-size:0.7vw;">
+                        <h4>{{level3.topic.name}}</h4>
+                        <hr>
+                        <h4>In Lectures:</h4>
+                        <ul>
+                        {% for ls in level3.get_occurrences %}
+                            <li><a href="{% url 'teach:slideshow' ls.lec.id %}">{{ ls.lec.title }}</a></li>
+                            <ul>
+                            {% for s in ls.slides %}
+                                <li><a href="{% url 'teach:slideshow' ls.lec.id %}{{s.get_url_suffix}}">{{s.slide.title}}</a></li>
+                            {% endfor %}
+                            </ul>
+                        {% endfor %}
+                        </ul>
+                        <hr>
+                        {% if level3.related_content.all %}
+                        <h4>Related:</h4>
+                        <ul>
+                            {% for rc in level3.related_content.all %}
+                            <li>{{ rc }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
               </section>
           {% endfor %}
       </section>

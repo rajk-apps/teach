@@ -10,7 +10,7 @@
   <script src="{% static "teach/js/popper.min.js" %}"></script>
   <script src="{% static "teach/js/bootstrap.min.js" %}"></script>
   <link rel="stylesheet" href="{% static "teach/css/reveal.css" %}">
-  <link rel="stylesheet" href="{% static "teach/css/theme/white.css" %}">
+  <link rel="stylesheet" href="{% static "teach/css/theme/black.css" %}">
   <script src="{% static "teach/js/head.min.js" %}"></script>  
 </head>
 <body>
@@ -26,7 +26,7 @@
     Reveal.initialize({ 
         dependencies: [
             // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/
-            //{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+            { src: '{% static "teach/lib/js/classList.js" %}', condition: function() { return !document.body.classList; } },
     
             // Interpret Markdown in <section> elements
             { src: '{% static "teach/plugin/markdown/marked.js" %}', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
@@ -36,7 +36,7 @@
             //{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
     
             // Zoom in and out with Alt+click
-            //{ src: 'plugin/zoom-js/zoom.js', async: true },
+            { src: '{% static "teach/plugin/zoom-js/zoom.js" %}', async: true },
     
             // Speaker notes
             { src: '{% static "teach/plugin/notes/notes.js" %}', async: true },

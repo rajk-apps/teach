@@ -30,9 +30,13 @@ class Content(models.Model):
     
     citation = models.CharField(max_length=300,default="",blank=True)
     citation_link = models.CharField(max_length=300,default="",blank=True)
+    
         
     def __str__(self):
-        return "%s - %s (%s)" % (self.type,self.title,self.id)
+        if self.topic == None:
+            return "Misc - %s - %s (%s)" % (self.type,self.title,self.id)
+        else:
+            return "%s - %s - %s (%s)" % (self.topic.name,self.type,self.title,self.id)
 
     def remove_animation(self):
         return re.sub('<!--.*?-->','',self.text)
@@ -44,7 +48,19 @@ class Content(models.Model):
                      self.text) if float(x[1]) > level]:
             out = out.replace(ss,"")
         return out
-
+    
+    def get_occurrences(self):
+        out = {}
+        lss = [ls for s in self.slide_set.all() for ls in s.lecturestructure_set.all()]
+        for ls in lss:
+            lec = ls.lecture
+            if lec.id in out.keys():
+                out[lec.id]['slides'].append(ls)
+            else:
+                out[lec.id] = {'lec':lec,
+                               'slides':[ls]}
+        return out.values()
+        
 
 class Course(models.Model):
     """
@@ -114,6 +130,13 @@ class LectureStructure(models.Model):
 
     def __str__(self):
         return " - ".join([self.lecture.title,self.slide.title,str(self.ordernum)])
+    
+    def get_url_suffix(self):
+        
+        if self.multislide:
+            return "#/%d/%d" % (self.ordernum,self.subordernum - 1)
+        else:
+            return "#/%d" % self.ordernum
 
 class Slide(models.Model):
     """
