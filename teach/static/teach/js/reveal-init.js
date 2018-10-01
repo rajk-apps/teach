@@ -1,6 +1,8 @@
 //Reveal.initialize();
 Reveal.configure({
 
+    pdfSeparateFragments: false,
+
     // Display presentation control arrows
     controls: true,
 

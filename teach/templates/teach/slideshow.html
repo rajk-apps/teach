@@ -16,7 +16,7 @@
               {% endif %}
               <div class="container">
                   {% for content in slide.render %}
-                      {%include "teach/contentrender.html" %}
+                      {%include "teach/slidestructurerender.html" %}
                   {% endfor %}
               </div>
           </section>
@@ -29,7 +29,7 @@
           {% endif %}
           <div class="container">
               {% for content in structure.slide.render %}
-                  {%include "teach/contentrender.html" %}
+                  {%include "teach/slidestructurerender.html" %}
               {% endfor %}
           </div>
       </section>

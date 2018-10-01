@@ -1,26 +1,21 @@
-{% if content.t == "r" %}
-    <div class="row">
-        {% for ch in content.ch %}
-            {% with content=ch template_name="teach/contentrender.html" %}
-                {% include template_name %}
-            {% endwith %}
-        {% endfor %}
-    </div>
-{% elif content.t == "c" %}
-    <div class="col-{{content.w}}">
-        {% for ch in content.ch %}
-            {% with content=ch template_name="teach/contentrender.html" %}
-                {% include template_name %}
-            {% endwith %}
-        {% endfor %}
-    </div>
-{% elif content.t == "n" %}
-    <div style="{{content.m.css_style}}" {% if content.m.fragment_no > 0 %} class="fragment" data-fragment-index="{{ content.m.fragment_no }}" {% endif %}>
-        {% if content.m.print_title %}
-            <h4>{{ content.m.content.title }}</h4>
-        {% endif %}
+{% if ss %}
+    {% if content.markup == "md" %}
         <p data-markdown>
-{{ content.m.render }}
+{{ ss.render }}
         </p>
-    </div>
+    {% elif content.markup == "iframe" %}
+        <iframe width="1000" height="600" frameborder="0" src="{{content.text}}"> </iframe>
+    {% elif content.markup == "img" %}
+        <img src="{{content.text}}">
+    {% endif %}
+{% else %}
+    {% if content.markup == "md" %}
+        <p data-markdown>
+{{ content.remove_animation }}
+        </p>
+    {% elif content.markup == "iframe" %}
+        <iframe width="1000" height="600" frameborder="0" src="{{content.text}}"> </iframe>
+    {% elif content.markup == "img" %}
+        <img src="{{content.text}}">
+    {% endif %}
 {% endif %}

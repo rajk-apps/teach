@@ -1,12 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import User
 import re
+
 
 class ContentType(models.Model):
     id = models.CharField(max_length=5,primary_key=True)
     name = models.CharField(max_length=40)
     
     def __str__(self):
-        return self.name
+        return "%s (%s)" % (self.name,self.id)
 
 class Content(models.Model):
     """
@@ -16,9 +18,12 @@ class Content(models.Model):
     id = models.CharField(max_length=50,primary_key=True)
     text = models.TextField(max_length=2000)
     
-    MARKUP_CHOICES = [('md','md'),('html','html')]
+    MARKUP_CHOICES = [('md','md'),
+                      ('html','html'),
+                      ('iframe','iframe'),
+                      ('img','img')]
     
-    markup = models.CharField(max_length=4,
+    markup = models.CharField(max_length=10,
                               choices=MARKUP_CHOICES,
                               default='md')
     
@@ -198,7 +203,44 @@ class SlideStructure(models.Model):
             return outtext
         else:
             return re.sub('<!--.*?-->','',outtext)
-        
+
+#Tasks:
+
+class Task(models.Model):
+    """
+    Task class
+    """
+    id = models.CharField(max_length=30,primary_key=True)
+    text = models.TextField()
+    
+    wrong_options = models.ManyToManyField('Option',related_name='wrong_option')
+    correct_options = models.ManyToManyField('Option',related_name='correct_option')
+    
+    correct_answer = models.TextField(default="",blank=True)
+    
+    POSS_TYPES = [('choice','Multiple choice'),
+                  ('input_text','Text input'),
+                  ('code','Code'),
+                  ('output','Output test'),
+                  ('input_number','Number input')]
+
+    type = models.CharField(max_length=10,
+                              choices=POSS_TYPES,
+                              default='input_text')
+    
+    def __str__(self):
+        return self.type + " - " + self.id
+    
+    def check_answer(self,answer):
+        pass
+
+class Option(models.Model):
+    """
+    Option for a task
+    """
+    id = models.CharField(max_length=30,primary_key=True)
+    text = models.TextField()
+
 #Organizing content topically:
 
 class Topic(models.Model):
@@ -210,5 +252,23 @@ class Topic(models.Model):
     id = models.CharField(max_length=30,primary_key=True)
 
     def __str__(self):
-        return self.name
+        return "%s (%s)" % (self.name,self.id)
 
+#Course instances
+
+class CourseInstance(models.Model):
+    """
+    A course instance with solutions for tasks, progress
+    and all that
+    """
+    id = models.CharField(max_length=30,primary_key=True)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    students = models.ManyToManyField(User,through='CourseStudent',related_name='student')
+    teachers = models.ManyToManyField(User,related_name='teacher')
+    
+class CourseStudent(models.Model):
+    """
+    Student performance in course
+    """
+    student = models.ForeignKey(User,on_delete=models.CASCADE)
+    course = models.ForeignKey(CourseInstance,on_delete=models.CASCADE)
