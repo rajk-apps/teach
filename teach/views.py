@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 #from django.contrib.auth.decorators import login_required
 
-from .models import Course,Lecture,Topic,Content
+from .models import *#Course,Lecture,Topic,Content,Task,TaskList
 
 #@login_required
 def home(request):
@@ -125,3 +125,24 @@ def slideshow(request,lecture_id):
                   {'lecture_title': lecture.title,
                    'structures': structures
                    })
+
+
+# ------- Tasks: ---------
+
+#@login_required
+def tasklist(request,tasklist_id):
+    root = get_object_or_404(TaskList, id=tasklist_id)
+    
+    tasklist_structure = root.taskliststructure_set.order_by('ordernum')
+    
+    return render(request, 'teach/tasklist.html',
+                  {'tasklist_name': root.name,
+                   'tasklist_id': tasklist_id,
+                   'tasklist_structure': tasklist_structure})
+
+
+#@login_required
+def task(request,task_id):
+    root = get_object_or_404(Task, id=task_id)
+    return render(request,'teach/taskrender.html',
+                  {'task':task})

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tasklist_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>Tasks</h2>
+            {% for ts in tasklist_structure %}
+                <div class="row">
+                    <div class="col-12">
+                        <h4> {{forloop.counter}}. - <a href="{% url 'teach:task' ts.task.id %}">{{ts.task.name}}</a></h4>
+                        {% with task=ts.task %}
+                        {%include "teach/taskrender.html" %}
+                        {% endwith %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -52,6 +52,26 @@ class SlideStructureAdmin(admin.ModelAdmin):
 
 
 
+#Tasks
+
+@admin.register(models.TaskList)
+class TaskListAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.TaskListStructure)
+class TaskListStructureAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.ChoiceTask)
+class ChoiceTaskAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.TaskOption)
+class TaskOptionAdmin(admin.ModelAdmin):
+    pass
+
+
+
 
 # Functions for importing courses:
 def import_course(course_loc):

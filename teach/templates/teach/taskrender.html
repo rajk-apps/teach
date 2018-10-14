@@ -1,0 +1,11 @@
+{% if task.type == "MC" %}
+    <ul>
+    {% for option in task.get_options %}
+        <li> {{option.text}} </li>
+    {% endfor %}
+    </ul>
+{% else %}
+
+<b>{{task.type}}</b>
+
+{% endif %}

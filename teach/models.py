@@ -1,6 +1,8 @@
 from django.db import models
+from polymorphic.models import PolymorphicModel
 from django.contrib.auth.models import User
 import re
+from random import shuffle
 
 
 class ContentType(models.Model):
@@ -204,28 +206,61 @@ class SlideStructure(models.Model):
         else:
             return re.sub('<!--.*?-->','',outtext)
 
-#------Tasks:
+#-----------Tasks: -------------------
 
-class Task(models.Model):
+class TaskList(models.Model):
     """
     Task class
     """
     id = models.CharField(max_length=30,primary_key=True)
-    name = models.CharField(max_length=50)
-    text = models.TextField()
+    name = models.CharField(max_length=150)
     
-    user_answer = models.ManyToManyField(User,through='TaskAnswer')
+    tasks = models.ManyToManyField('Task',through='TaskListStructure')
+    
+    user_scores = models.ManyToManyField(User,through='TaskListScore')
+    
+    def __str__(self):
+        return self.name + " - " + self.id    
+    
+
+class TaskListStructure(models.Model):
+    """
+    Tasks to tasklists
+    """
+    task_list = models.ForeignKey(TaskList,on_delete=models.CASCADE)
+    task = models.ForeignKey('Task',on_delete=models.CASCADE)
+    ordernum = models.PositiveIntegerField()
+
+
+
+
+class Task(PolymorphicModel):
+    """
+    Task class
+    """
+    id = models.CharField(max_length=30,primary_key=True)
+    name = models.CharField(max_length=150)
+    text = models.TextField()
+    type = "GEN"
+    
+    user_answers = models.ManyToManyField(User,through='TaskAnswer')
         
     def __str__(self):
-        return self.type + " - " + self.id
+        return self.name + " - " + self.type + " - " + self.id
     
 
 class ChoiceTask(Task):
-    
+    """
+    Subclass for multiple choice questions
+    """
+    type = "MC"
     wrong_options = models.ManyToManyField('TaskOption',related_name='wrong_option')
     correct_options = models.ManyToManyField('TaskOption',related_name='correct_option')
 
-
+    def get_options(self):
+        options = [o for o in self.wrong_options.all()] + [o for o in self.correct_options.all()]
+        shuffle(options)
+        return options
 
 class TaskOption(models.Model):
     """
@@ -243,6 +278,27 @@ class TaskAnswer(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     task = models.ForeignKey(Task,on_delete=models.CASCADE)
     answer = models.ForeignKey(TaskOption,on_delete=models.CASCADE)
+
+
+
+class TaskListScore(models.Model):
+    """
+    Scores by users
+    """
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    task_list = models.ForeignKey(TaskList,on_delete=models.CASCADE)
+    score = models.TextField()
+
+
+
+
+
+
+
+
+
+
+
 
 
 #Organizing content topically:
