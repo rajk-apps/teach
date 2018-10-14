@@ -204,42 +204,46 @@ class SlideStructure(models.Model):
         else:
             return re.sub('<!--.*?-->','',outtext)
 
-#Tasks:
+#------Tasks:
 
 class Task(models.Model):
     """
     Task class
     """
     id = models.CharField(max_length=30,primary_key=True)
+    name = models.CharField(max_length=50)
     text = models.TextField()
     
-    wrong_options = models.ManyToManyField('Option',related_name='wrong_option')
-    correct_options = models.ManyToManyField('Option',related_name='correct_option')
-    
-    correct_answer = models.TextField(default="",blank=True)
-    
-    POSS_TYPES = [('choice','Multiple choice'),
-                  ('input_text','Text input'),
-                  ('code','Code'),
-                  ('output','Output test'),
-                  ('input_number','Number input')]
-
-    type = models.CharField(max_length=10,
-                              choices=POSS_TYPES,
-                              default='input_text')
-    
+    user_answer = models.ManyToManyField(User,through='TaskAnswer')
+        
     def __str__(self):
         return self.type + " - " + self.id
     
-    def check_answer(self,answer):
-        pass
 
-class Option(models.Model):
+class ChoiceTask(Task):
+    
+    wrong_options = models.ManyToManyField('TaskOption',related_name='wrong_option')
+    correct_options = models.ManyToManyField('TaskOption',related_name='correct_option')
+
+
+
+class TaskOption(models.Model):
     """
     Option for a task
     """
     id = models.CharField(max_length=30,primary_key=True)
     text = models.TextField()
+
+
+
+class TaskAnswer(models.Model):
+    """
+    Answers by users
+    """
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    task = models.ForeignKey(Task,on_delete=models.CASCADE)
+    answer = models.ForeignKey(TaskOption,on_delete=models.CASCADE)
+
 
 #Organizing content topically:
 
