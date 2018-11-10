@@ -140,9 +140,3 @@ def tasklist(request,tasklist_id):
                    'tasklist_id': tasklist_id,
                    'tasklist_structure': tasklist_structure})
 
-
-#@login_required
-def task(request,task_id):
-    root = get_object_or_404(Task, id=task_id)
-    return render(request,'teach/taskrender.html',
-                  {'task':task})

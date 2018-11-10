@@ -9,5 +9,4 @@ urlpatterns = [
     path('content/<str:course_id>/<str:type_id>/', views.contentshow, name='contentshow'),
     path('topic/<str:topic_id>/', views.topicshow, name='topicshow'),
     path('tasklist/<str:tasklist_id>/', views.tasklist, name='tasklist'),
-    path('task/<str:task_id>/', views.task, name='task'),
 ]

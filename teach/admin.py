@@ -61,20 +61,10 @@ class TaskListAdmin(admin.ModelAdmin):
 class TaskAdmin(admin.ModelAdmin):
     pass
 
-
-
-@admin.register(models.TaskListStructure)
-class TaskListStructureAdmin(admin.ModelAdmin):
+@admin.register(models.UserSubmission)
+class SubmissionAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(models.ChoiceTask)
-class ChoiceTaskAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.TaskOption)
-class TaskOptionAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.TextTask)
-class TextTaskAdmin(admin.ModelAdmin):
+@admin.register(models.TaskAnswer)
+class TaskAnswerAdmin(admin.ModelAdmin):
     pass

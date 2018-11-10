@@ -8,12 +8,12 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='riki-teach',
-    version='0.2',
+    name='teach',
+    version='0.2.1',
     packages=find_packages(),
     include_package_data=True,
     license='MIT License',
-    description='A simple Django app for teaching.',
+    description='Presentation, content organisation, quizes',
     long_description=README,
     author='Endre Márk Borza',
     author_email='endremborza@gmail.com',

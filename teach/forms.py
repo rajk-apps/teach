@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.forms import ModelForm
-from django import template
-from .models import
+from .models import *
 
 
 ###Task Forms
@@ -11,27 +10,20 @@ class AnswerForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user')
         task_for = kwargs.pop('task')
+        sub = kwargs.pop('submission')
         super(AnswerForm, self).__init__(*args, **kwargs)
         
         self.fields['user'] = User.objects.get(id=user_id)
-        self.fields['task'] = User.objects.get(id=user_id)
-        self.fields['answer'].queryset = task_for.get_options()
+        self.fields['task'] = Task.objects.get(id=task_for)
+        self.fields['submission'] = sub
         
     
     class Meta:
-        model = ChoiceTaskAnswer
-        fields = ['answer']
+        model = TaskAnswer
+        fields = ['answertext']
         
         labels = {
-            'answer': ('válasz'),
+            'answertext': ('válasz'),
         }
-
-
-register = template.Library()
-
-@register.simple_tag
-def call_method(obj, method_name, *args):
-    method = getattr(obj, method_name)
-    return method(*args)
 
 

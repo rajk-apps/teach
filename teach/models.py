@@ -216,23 +216,13 @@ class TaskList(models.Model):
     id = models.CharField(max_length=30,primary_key=True)
     name = models.CharField(max_length=150)
     
-    tasks = models.ManyToManyField('Task',through='TaskListStructure')
+    tasks = models.ManyToManyField('Task')
     
-    user_scores = models.ManyToManyField(User,through='TaskListScore')
-    
+    num_sample = models.PositiveIntegerField(default=0)
+        
     def __str__(self):
-        return self.name + " - " + self.id    
+        return self.name + " - " + self.id
     
-
-class TaskListStructure(models.Model):
-    """
-    Tasks to tasklists
-    """
-    task_list = models.ForeignKey(TaskList,on_delete=models.CASCADE)
-    task = models.ForeignKey('Task',on_delete=models.CASCADE)
-    ordernum = models.PositiveIntegerField()
-
-
 
 
 class Task(models.Model):
@@ -243,71 +233,44 @@ class Task(models.Model):
     name = models.CharField(max_length=150)
     text = models.TextField()
     
-        
-    def __str__(self):
-        return self.name + " - " + self.id
+    restriction_kind = models.CharField(max_length=25,
+        choices = [('none','none'),
+                   ('choice','choice'),
+                   ('number_of_choices','number_of_choices'),
+                   ('number','number')],
+        default='none')
     
+    restriction_detail = models.TextField(null=True,blank=True)
+    
+    eval_kind = models.CharField(max_length=25,
+        choices = [('manual','manual'),
+                   ('accuracy','accuracy'),
+                   ('pct_off','pct_off')],
+        default='manual')
+    
+    eval_detail = models.TextField(null=True,blank=True)
+    eval_transform = models.TextField(null=True,blank=True)
 
-class ChoiceTask(models.Model):
-    """
-    Class for multiple choice questions
-    """
-    type = "MC"
-    parent = models.ForeignKey(Task,on_delete=models.CASCADE)
-    wrong_options = models.ManyToManyField('TaskOption',related_name='wrong_option')
-    correct_options = models.ManyToManyField('TaskOption',related_name='correct_option')
-    answers = models.ManyToManyField(User,through='ChoiceTaskAnswer')
+    answer = models.ManyToManyField(User,through='TaskAnswer')
+    
+    explanation = models.TextField(null=True,blank=True)
+    
+    def __str__(self):
+        return self.name + " - " + self.restriction_kind + " - " + self.id
 
-    def get_options(self):
-        options = [o for o in self.wrong_options.all()] + [o for o in self.correct_options.all()]
-        shuffle(options)
-        return options
+class UserSubmission(models.Model):
 
-class TaskOption(models.Model):
-    """
-    Option for a task
-    """
-    id = models.CharField(max_length=30,primary_key=True)
-    text = models.TextField()
+    tasklist = models.ForeignKey(TaskList,on_delete=models.CASCADE)
+    starttime = models.BigIntegerField()
+    endtime = models.BigIntegerField()
 
-class TextTask(models.Model):
-    """
-    Subclass for multiple choice questions
-    """
-    type = "TXT"
-    parent = models.ForeignKey(Task,on_delete=models.CASCADE)
-    acceptable_answer = models.TextField()
-    answers = models.ManyToManyField(User,through='TextTaskAnswer')
-
-
-class ChoiceTaskAnswer(models.Model):
-    """
-    Answers by users
-    """
+class TaskAnswer(models.Model):
+    
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     task = models.ForeignKey(Task,on_delete=models.CASCADE)
-    answer = models.ForeignKey(TaskOption,on_delete=models.CASCADE)
+    submission = models.ForeignKey(UserSubmission,on_delete=models.CASCADE)
 
-class TextTaskAnswer(models.Model):
-    """
-    Answers by users
-    """
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    task = models.ForeignKey(Task,on_delete=models.CASCADE)
-    answer = models.TextField()
-
-
-
-class TaskListScore(models.Model):
-    """
-    Scores by users
-    """
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    task_list = models.ForeignKey(TaskList,on_delete=models.CASCADE)
-    score = models.TextField()
-
-
-
+    answertext = models.TextField(null=True,blank=True)
 
 #Organizing content topically:
 
