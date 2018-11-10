@@ -11,9 +11,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h4> {{forloop.counter}}. - <a href="{% url 'teach:task' ts.task.id %}">{{ts.task.name}}</a></h4>
-                        {% with task=ts.task %}
-                        {%include "teach/taskrender.html" %}
-                        {% endwith %}
+                        {{ ts.task.formview }}
                     </div>
                 </div>
             {% endfor %}
