@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tasklist_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>{{ tasklist_name }}</h2>
+            <ul>
+            {% for stat in quizstats %}
+                <li> {{ stat }}  </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h2>Tasks</h2>
+            <form method ="post">{% csrf_token %}
+            {% for taskform in taskforms %}
+                <div class="row">
+                    <div class="col-12">
+                        <h3> {{forloop.counter}}. </h3>
+                         {% for q in taskform %}
+                            {% if q.label != "Id" and q.label != "Task" %}
+                                <h4>{{q.label}}</h4>
+                                <p>{{ q.help_text }}</p>
+                            {% endif %}
+                            {{ q }}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            {{ taskforms.management_form }}
+            <input type="hidden" id="subid" name="subid" value="{{ subid }}">
+            <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

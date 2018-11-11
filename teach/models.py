@@ -79,6 +79,8 @@ class Course(models.Model):
 
     lectures = models.ManyToManyField('Lecture',through='CourseStructure')
     additional_content = models.ManyToManyField('Content',through='AdditionalContent')
+    
+    tasklists = models.ManyToManyField('TaskList',blank=True)
 
     content_types_selected = models.ManyToManyField('ContentType',blank=True)
 
@@ -216,7 +218,7 @@ class TaskList(models.Model):
     id = models.CharField(max_length=30,primary_key=True)
     name = models.CharField(max_length=150)
     
-    tasks = models.ManyToManyField('Task')
+    tasks = models.ManyToManyField('Task',blank=True)
     
     num_sample = models.PositiveIntegerField(default=0)
         
@@ -261,8 +263,14 @@ class Task(models.Model):
 class UserSubmission(models.Model):
 
     tasklist = models.ForeignKey(TaskList,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     starttime = models.BigIntegerField()
-    endtime = models.BigIntegerField()
+    endtime = models.BigIntegerField(blank=True,null=True)
+    
+    def __str__(self):
+        
+        return self.tasklist.name + " - " + self.user.username + \
+     " - " + str(self.starttime)
 
 class TaskAnswer(models.Model):
     
@@ -270,7 +278,51 @@ class TaskAnswer(models.Model):
     task = models.ForeignKey(Task,on_delete=models.CASCADE)
     submission = models.ForeignKey(UserSubmission,on_delete=models.CASCADE)
 
+    needs_human = models.BooleanField(default=False,blank=True)
+
     answertext = models.TextField(null=True,blank=True)
+
+    score = models.FloatField(null=True,blank=True)
+    
+    def evaluate_score(self):
+        method = self.task.eval_kind
+        rest_method = self.task.restriction_kind
+        detail = self.task.eval_detail
+        transforms = []
+        try:
+            transforms = self.task.eval_transform.split(';')
+        except:
+            pass
+        
+        transfuns = {'strip':lambda x: x.strip(),
+                    'lower':lambda x: x.lower(),
+                    '':lambda x: x}
+        
+        def itertranses(s,funs,fundict):
+            for f in funs:
+                s = fundict[f](s)
+            return s
+                
+        
+        if method == 'manual':
+            self.score = 0
+            self.needs_human = True
+        elif method == 'accuracy':
+            answers = set([itertranses(s,transforms,transfuns) for s
+                           in self.answertext.split(';')])
+            corr = set([itertranses(s,transforms,transfuns) for s
+                           in detail.split(';')])
+            if rest_method == 'choice' or rest_method == 'none' or rest_method == 'number':
+                sc = len(answers & corr)
+            else:
+                allposs = set([itertranses(s,transforms,transfuns) for s
+                               in self.task.restriction_detail.split(';')])
+                sc = (len(answers & corr)+len(allposs - corr - answers)) \
+                                                / len(allposs)
+            print(sc)
+            self.score = sc
+        else:
+            self.score = (float(self.answertext) - float(detail))
 
 #Organizing content topically:
 

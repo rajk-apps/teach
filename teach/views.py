@@ -1,7 +1,13 @@
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
-#from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
+from django.forms import modelformset_factory
+from django import forms
+import time
+from copy import copy
 
 from .models import *#Course,Lecture,Topic,Content,Task,TaskList
+from teach.models import TaskAnswer
 
 #@login_required
 def home(request):
@@ -18,7 +24,8 @@ def course(request,course_id):
                   {'course_name': course.name,
                    'course_id': course_id,
                    'course_structure': course_structure,
-                   'to_include': to_include})
+                   'to_include': to_include,
+                   'quizes':course.tasklists.all()})
 
 #@login_required
 def contentshow(request,course_id,type_id):
@@ -129,14 +136,132 @@ def slideshow(request,lecture_id):
 
 # ------- Tasks: ---------
 
-#@login_required
-def tasklist(request,tasklist_id):
+@login_required
+def quiz(request,tasklist_id):
+    
+    
+    if request.method == "POST":
+        post_d = request.POST.copy()
+        for key in request.POST:
+            plist = request.POST.getlist(key)
+            if len(plist) > 1:
+                post_d[key] = ';'.join(plist)
+        request.POST = post_d
+        subid = request.POST.get('subid', '')
+        formset = modelformset_factory(TaskAnswer,fields=('answertext','task'))(
+            request.POST)
+        if formset.is_valid():
+            tas = formset.save(commit = False)
+            for tanswer in tas:
+                tanswer.user = request.user
+                tanswer.submission_id = subid
+                tanswer.evaluate_score()
+                tanswer.save()
+        sub = UserSubmission.objects.get(id=subid)
+        sub.endtime = int(time.time())
+        sub.save()
+        return usersubmission(request,subid)
+    
     root = get_object_or_404(TaskList, id=tasklist_id)
     
-    tasklist_structure = root.taskliststructure_set.order_by('ordernum')
+    alltasks = root.tasks.all()
     
-    return render(request, 'teach/tasklist.html',
-                  {'tasklist_name': root.name,
-                   'tasklist_id': tasklist_id,
-                   'tasklist_structure': tasklist_structure})
+    not_answered = alltasks.exclude(taskanswer__user = request.user.id)
 
+
+    to_sample = root.num_sample
+    
+    if len(not_answered) == 0:
+        selected_tasks = alltasks.order_by('?')[:to_sample]
+    elif len(not_answered) <= to_sample:
+        selected_tasks = not_answered
+    else:
+        selected_tasks = not_answered.order_by('?')[:to_sample]
+
+    prevsubs = UserSubmission.objects.filter(user=request.user)
+
+    submission = UserSubmission(user=request.user,
+                                tasklist=root,
+                                starttime=int(time.time()))
+    submission.save()
+    
+    quizstats = ['This quiz selects %d questions from a pool of %d' % (to_sample,len(alltasks)),
+                 'You have %d/%d of these left to answer' % (len(not_answered),len(alltasks)),
+                 'You have started this quiz %d times so far' % len(prevsubs)]
+    
+    taskforms = taskize_form(selected_tasks)
+    
+    return render(request, 'teach/quiz.html',
+                  {'tasklist_name': root.name,
+                   'quizstats': quizstats,
+                   'taskforms': taskforms,
+                   'subid':submission.id})
+
+
+
+@login_required
+def usersubmission(request,subid):
+    
+    sub = UserSubmission.objects.get(id=subid)
+    
+    if sub.user.id != request.user.id:
+        return HttpResponseForbidden()
+
+    tanswers = sub.taskanswer_set.all()
+    
+    
+    totalscore = sum([t.score for t in tanswers])
+
+    quizstats = ['Took you %.2f minutes to complete this quiz' % ((sub.endtime - sub.starttime)/60),
+                 'You scored %.2f points' % totalscore]
+
+    
+    return render(request,'teach/usersubmission.html',{'answers':tanswers,
+                           'quizstats':quizstats,
+                            'tasklist_name':sub.tasklist.name,
+                            'subid':subid})
+
+
+
+
+def taskize_form(tasks):
+    
+    formset_out = modelformset_factory(TaskAnswer,
+                                fields=('answertext','task'),
+                                extra=len(tasks),
+                                max_num=len(tasks))(
+                                queryset=TaskAnswer.objects.none(),
+                                initial =
+                                [{'answertext':'','task':t.id} for t in tasks])
+
+    ti = 0
+    for form in formset_out:
+
+        task = tasks[ti]
+        ti += 1
+        
+        rkind = task.restriction_kind
+        choices = [(x,x) for x in task.restriction_detail.split(';')]
+        
+        
+        if rkind == 'none':
+            form.fields['answertext'].widget = forms.TextInput()
+        elif rkind == 'choice':
+            form.fields['answertext'].widget = forms.Select(
+                            choices=choices,
+                            )
+        elif rkind == 'number_of_choices':
+            form.fields['answertext'].widget = forms.CheckboxSelectMultiple(
+                            choices=choices,
+                            )
+        elif rkind == 'number':
+            form.fields['answertext'].widget = forms.NumberInput()
+    
+        form.fields['answertext'].help_text = task.text
+        form.fields['answertext'].label = task.name
+        form.fields['answertext'].initial = ''
+        
+        form.fields['task'].widget = forms.HiddenInput()
+        form.fields['task'].initial = task.id
+    
+    return formset_out

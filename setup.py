@@ -14,6 +14,7 @@ setup(
     include_package_data=True,
     license='MIT License',
     description='Presentation, content organisation, quizes',
+    url='https://github.com/rajk-apps/teach',
     long_description=README,
     author='Endre Márk Borza',
     author_email='endremborza@gmail.com',
