@@ -1,5 +1,5 @@
 from django.http import HttpResponseForbidden
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404,redirect
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django import forms
@@ -12,20 +12,29 @@ from teach.models import TaskAnswer
 #@login_required
 def home(request):
     courses = Course.objects.get_queryset()
-    return render(request, 'teach/home.html', {'courses': courses})
+    return render(request, 'teach/home.html',
+                   {'courses': courses,
+                    'topics':Topic.objects.all()})
 
 #@login_required
 def course(request,course_id):
     course = get_object_or_404(Course, id=course_id)
     course_structure = course.coursestructure_set.order_by('ordernum')
     to_include = [type.name for type in course.content_types_selected.all()]
+    topics = Topic.objects.filter(content__in = \
+        Content.objects.filter(slide__in= \
+             Slide.objects.filter(lecture__in = \
+                 Lecture.objects.filter(coursestructure__in = course_structure)
+                         ))).distinct()
+            
     
     return render(request, 'teach/course.html',
                   {'course_name': course.name,
                    'course_id': course_id,
                    'course_structure': course_structure,
                    'to_include': to_include,
-                   'quizes':course.tasklists.all()})
+                   'quizes':course.tasklists.all(),
+                   'topics': topics})
 
 #@login_required
 def contentshow(request,course_id,type_id):
@@ -160,7 +169,7 @@ def quiz(request,tasklist_id):
         sub = UserSubmission.objects.get(id=subid)
         sub.endtime = int(time.time())
         sub.save()
-        return usersubmission(request,subid)
+        return redirect('teach:usersubmission',subid=subid)
     
     root = get_object_or_404(TaskList, id=tasklist_id)
     

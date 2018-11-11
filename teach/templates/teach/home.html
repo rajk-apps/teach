@@ -1,16 +1,30 @@
-{% extends 'base.html' %}
+{% extends 'teach_base.html' %}
 
 {% block title %}Teach - home{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Courses</h2>
-    {% for course in courses %}
-        <div class="row">
-            <div class="col-12">
-                <h3> <a href = "{% url 'teach:course' course.id %}">{{ course.name }}</a> </h3>
+<div class="container d-flex align-items-center h-100">
+    <div class="row w-100">
+        <div class="col-6">
+        <h2>Courses</h2>
+        {% for course in courses %}
+            <div class="row w-100">
+                <div class="col-12">
+                    <h3> <a href = "{% url 'teach:course' course.id %}">{{ course.name }}</a> </h3>
+                </div>
             </div>
+        {% endfor %}
         </div>
-    {% endfor %}
+        <div class="col-6">
+        <h2>Topics</h2>
+        {% for topic in topics %}
+            <div class="row w-100">
+                <div class="col-12">
+                    <h3> <a href = "{% url 'teach:topicshow' topic.id %}">{{ topic.name }}</a> </h3>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}

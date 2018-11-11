@@ -221,6 +221,8 @@ class TaskList(models.Model):
     tasks = models.ManyToManyField('Task',blank=True)
     
     num_sample = models.PositiveIntegerField(default=0)
+    
+    instant_answer = models.BooleanField(default=False)
         
     def __str__(self):
         return self.name + " - " + self.id
