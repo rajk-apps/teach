@@ -1,0 +1,50 @@
+<div class="row">
+    <div class="col-12">
+        <h2>Answers</h2>
+        {% for ans in content %}
+            <div class="row">
+                <div class="col-12">
+                    <h3 class='text-center'> {{forloop.counter}}.</h3>
+                     <div class="row">
+                        <div class="col-3">
+                        {% if ans.score == 1 %}
+                            <p style="font-size:27px;color:green">{% widthratio ans.score 1 100 %}%</p>
+                        {% else %}
+                            <p style="font-size:27px;color:red">{% widthratio ans.score 1 100 %}%</p>
+                        {% endif %}
+                        </div>
+                        <div class="col-9 p-4">
+                            <b> {{ans.task.text}}</b>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                        <b>explanation:</b> <p>{{ans.task.explanation}}</p>
+                        </div>
+                        <div class="col-4">
+                            <b>your answer:</b>
+                            <ul>
+                                {% for opt in ans.answersplit %}
+                                <li>{{opt}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-4">
+                            <b>possible answers:</b>
+                            <ul>
+                                {% for opt in ans.optionsplit %}
+                                    {% if opt.corr %}
+                                        <li><b style='color:green'>{{opt.text}}</b></li>
+                                    {% else %}
+                                        <li>{{opt.text}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+    </div>
+</div>

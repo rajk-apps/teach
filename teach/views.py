@@ -5,6 +5,7 @@ from django.forms import modelformset_factory
 from django import forms
 import time
 from copy import copy
+from django.urls import reverse
 
 from .models import *#Course,Lecture,Topic,Content,Task,TaskList
 from teach.models import TaskAnswer
@@ -146,8 +147,7 @@ def slideshow(request,lecture_id):
 # ------- Tasks: ---------
 
 @login_required
-def quiz(request,tasklist_id):
-    
+def take_quiz(request,tasklist_id,take_kind):
     
     if request.method == "POST":
         post_d = request.POST.copy()
@@ -168,39 +168,25 @@ def quiz(request,tasklist_id):
                 tanswer.save()
         sub = UserSubmission.objects.get(id=subid)
         sub.endtime = int(time.time())
+        sub.submitted = True
         sub.save()
-        return redirect('teach:usersubmission',subid=subid)
+        return redirect(reverse('teach:view_quiz', 
+                    kwargs={'tasklist_id':tasklist_id}) + '#' + str(sub.id))
+        #return redirect('teach:view_quiz',tasklist_id=tasklist_id)
     
     root = get_object_or_404(TaskList, id=tasklist_id)
     
-    alltasks = root.tasks.all()
-    
-    not_answered = alltasks.exclude(taskanswer__user = request.user.id)
-
-
-    to_sample = root.num_sample
-    
-    if len(not_answered) == 0:
-        selected_tasks = alltasks.order_by('?')[:to_sample]
-    elif len(not_answered) <= to_sample:
-        selected_tasks = not_answered
-    else:
-        selected_tasks = not_answered.order_by('?')[:to_sample]
-
-    prevsubs = UserSubmission.objects.filter(user=request.user)
+    quizstats,subs,remaining = root.stats(request.user,
+                                          take_kind)
 
     submission = UserSubmission(user=request.user,
                                 tasklist=root,
                                 starttime=int(time.time()))
     submission.save()
     
-    quizstats = ['This quiz selects %d questions from a pool of %d' % (to_sample,len(alltasks)),
-                 'You have %d/%d of these left to answer' % (len(not_answered),len(alltasks)),
-                 'You have started this quiz %d times so far' % len(prevsubs)]
+    taskforms = taskize_form(remaining)
     
-    taskforms = taskize_form(selected_tasks)
-    
-    return render(request, 'teach/quiz.html',
+    return render(request, 'teach//quizes/take_quiz.html',
                   {'tasklist_name': root.name,
                    'quizstats': quizstats,
                    'taskforms': taskforms,
@@ -209,26 +195,20 @@ def quiz(request,tasklist_id):
 
 
 @login_required
-def usersubmission(request,subid):
+def view_quiz(request,tasklist_id):
     
-    sub = UserSubmission.objects.get(id=subid)
+    root = get_object_or_404(TaskList, id=tasklist_id)
     
-    if sub.user.id != request.user.id:
-        return HttpResponseForbidden()
-
-    tanswers = sub.taskanswer_set.all()
+    quizstats,subs,remaining = root.stats(request.user,
+                                          'view')
+    sublist = [{'stats':sub.stats(),
+                'answers':sub.taskanswer_set.all(),
+                'id':sub.id} for sub in subs]
     
-    
-    totalscore = sum([t.score for t in tanswers])
-
-    quizstats = ['Took you %.2f minutes to complete this quiz' % ((sub.endtime - sub.starttime)/60),
-                 'You scored %.2f points' % totalscore]
-
-    
-    return render(request,'teach/usersubmission.html',{'answers':tanswers,
+    return render(request,'teach/quizes/view_quiz.html',{'sublist':sublist,
                            'quizstats':quizstats,
-                            'tasklist_name':sub.tasklist.name,
-                            'subid':subid})
+                            'tasklist_name':root.name,
+                            'tasklist_id':tasklist_id})
 
 
 
@@ -243,28 +223,28 @@ def taskize_form(tasks):
                                 initial =
                                 [{'answertext':'','task':t.id} for t in tasks])
 
-    ti = 0
-    for form in formset_out:
+    for ti,form in enumerate(formset_out):
 
         task = tasks[ti]
-        ti += 1
         
         rkind = task.restriction_kind
         choices = [(x,x) for x in task.restriction_detail.split(';')]
         
         
         if rkind == 'none':
-            form.fields['answertext'].widget = forms.TextInput()
+            form.fields['answertext'].widget = forms.TextInput(
+                attrs={'required': True})
         elif rkind == 'choice':
-            form.fields['answertext'].widget = forms.Select(
-                            choices=choices,
+            form.fields['answertext'].widget = forms.RadioSelect(
+                            choices=choices,attrs={'required': True}
                             )
         elif rkind == 'number_of_choices':
             form.fields['answertext'].widget = forms.CheckboxSelectMultiple(
                             choices=choices,
                             )
         elif rkind == 'number':
-            form.fields['answertext'].widget = forms.NumberInput()
+            form.fields['answertext'].widget = forms.NumberInput(
+                attrs={'required': True})
     
         form.fields['answertext'].help_text = task.text
         form.fields['answertext'].label = task.name

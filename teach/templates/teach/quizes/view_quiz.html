@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tasklist_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row p-4">
+        <div class="col-8">
+            <h2>{{ tasklist_name }}</h2>
+            {% with content=quizstats template_name="teach/quizes/quizstats.html" %}
+                {% include template_name %}
+            {% endwith %}
+        </div>
+        <div class="col-4">
+            <h2>Take the quiz!</h2>
+            Sample questions from:
+            <ul>
+            <li><a href="{% url 'teach:take_quiz' tasklist_id 'all' %}">any</a></li>
+            <li><a href="{% url 'teach:take_quiz' tasklist_id 'wrong' %}">ones I got wrong</a></li>
+            <li><a href="{% url 'teach:take_quiz' tasklist_id 'new' %}">ones I haven't tried yet</a></li>
+            <li><a href="{% url 'teach:take_quiz' tasklist_id 'remain' %}">combination of the last 2</a></li>
+            </ul>
+        </div>
+    </div>
+    <hr>
+    {% for sub in sublist %}
+    <div class="row border border-primary p-5 m-2" id="{{ sub.id }}">
+        <div class="col-12">
+            <h3>{{ tasklist_name }} - Submission {{ forloop.counter }}</h3>
+            {% with content=sub.stats template_name="teach/quizes/substats.html" %}
+                {% include template_name %}
+            {% endwith %}
+            {% with content=sub.answers template_name="teach/quizes/usersubmission.html" %}
+                {% include template_name %}
+            {% endwith %}
+            
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

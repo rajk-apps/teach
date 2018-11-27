@@ -1,0 +1,9 @@
+<h4>{{ content.task.name }}</h4>
+{% if content.score == 1 %}
+<b>score:</b><p style="font-size:20px;color:green">{{content.score}}</p>
+{% else %}
+<b>score:</b><p style="font-size:20px;color:red">{{content.score}}</p>
+{% endif %}
+<p><b>text:</b> {{content.task.text}}</p>
+<p><b>explanation:</b> {{content.task.explanation}}</p>
+<p><b>your answer:</b> {{content.answertext}}</p>
