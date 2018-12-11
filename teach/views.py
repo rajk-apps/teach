@@ -252,5 +252,7 @@ def taskize_form(tasks):
         
         form.fields['task'].widget = forms.HiddenInput()
         form.fields['task'].initial = task.id
+        
+        form.data = {'image':task.imagelink}
     
     return formset_out
