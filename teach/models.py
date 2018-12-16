@@ -427,7 +427,7 @@ class CourseInstance(models.Model):
     id = models.CharField(max_length=30,primary_key=True)
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     students = models.ManyToManyField(User,through='CourseStudent',related_name='student')
-    teachers = models.ManyToManyField(User,related_name='teacher')
+    admins = models.ManyToManyField(User,related_name='admin')
     
 class CourseStudent(models.Model):
     """
