@@ -5,7 +5,7 @@ from django.db import models as dbmodels
 
 # Register your models here.
 
-@admin.register(models.Course)
+'''@admin.register(models.Course)
 class CourseAdmin(admin.ModelAdmin):
     pass
 
@@ -67,4 +67,4 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 @admin.register(models.TaskAnswer)
 class TaskAnswerAdmin(admin.ModelAdmin):
-    pass
+    pass'''
