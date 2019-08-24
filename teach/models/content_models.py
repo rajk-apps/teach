@@ -23,6 +23,7 @@ class Content(models.Model):
     
     MARKUP_CHOICES = [('md', 'md'),
                       ('html', 'html'),
+                      ('py', 'py'),
                       ('iframe', 'iframe'),
                       ('img', 'img')]
     
@@ -30,36 +31,18 @@ class Content(models.Model):
                               choices=MARKUP_CHOICES,
                               default='md')
     
-    type = models.ForeignKey('ContentType',
-                             on_delete=models.SET_NULL,
-                             null=True)
-    
-    topic = models.ForeignKey('Topic',
-                              on_delete=models.SET_NULL,
-                              null=True)  # FIXME: make this many to many
-    
-    related_content = models.ManyToManyField('Content',
-                                             blank=True)
-    
-    citation = models.CharField(max_length=300,
-                                default="",
-                                blank=True)
+    content_type = models.ForeignKey('ContentType',
+                                     on_delete=models.SET_NULL,
+                                     null=True)
 
-    citation_link = models.CharField(max_length=300,
-                                     default="",
-                                     blank=True)
+    # TODO: make room for content relations and possible citations
 
     def __str__(self):
 
-        if self.topic is None:
-            return "Misc - %s - %s (%s)" % (self.type,
-                                            self.title,
-                                            self.id)
-        else:
-            return "%s - %s - %s (%s)" % (self.topic.name,
-                                          self.type,
-                                          self.title,
-                                          self.id)
+        return "{}, {} - {} ({})".format(self.content_type,
+                                         self.markup,
+                                         self.title,
+                                         self.id)
 
     def remove_animation(self):
         return re.sub(re.compile('<!--.*?-->'),
@@ -69,20 +52,7 @@ class Content(models.Model):
     def upto_level(self, level):
         out = self.text
         for ss in [x[0] for x in 
-                   re.findall(re.compile('(\s*.*<!--.*?level=(\d+)*.*?-->)'),  # FIXME: this is probably wrong
+                   re.findall(re.compile('(\s*.*<!--.*?level=(\d+)*.*?-->)'),  # FIXME: this is probably wrong, test it
                               str(self.text)) if float(x[1]) > level]:
             out = out.replace(ss, "")
         return out
-    
-    def get_occurrences(self):
-        out = {}
-        lss = [ls for s in self.slide_set.all()
-               for ls in s.lecturestructure_set.all()]
-        for ls in lss:
-            lec = ls.lecture
-            if lec.id in out.keys():
-                out[lec.id]['slides'].append(ls)
-            else:
-                out[lec.id] = {'lec': lec,
-                               'slides': [ls]}
-        return out.values()
