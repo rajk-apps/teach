@@ -1,38 +1,34 @@
 {% extends 'teach/reveal_base.html' %}
 
-{% block title %}{{ lecture_title }} {% endblock %}
+{% block title %}{{ slideshow_title }}{% endblock %}
 
 {% block slides %}
-    <section>
-        <h2>{{ lecture_title }} </h2>
-    </section>
-{% for structure in structures %}
-  {% if structure.multislide %}
-      <section>
-      {% for slide in structure.slides %}
+    {% if title_slide %}
+        <section>
+            <h2>{{ slideshow_title }}</h2>
+        </section>
+    {% endif %}
+
+    {% for element in slideshow_elements %}
+      {% if element.multislide %}
+          <section>
+      {% endif %}
+
+      {% for slide in element.subslides %}
           <section>
               {% if slide.hastitle %}
                   <h4> {{ slide.title }} </h4>
               {% endif %}
               <div class="container">
-                  {% for content in slide.render %}
-                      {%include "teach/slidestructurerender.html" %}
+                  {% for layout_tree in slide.render %}
+                      {% include "teach/layout_tree_render.html" %}
                   {% endfor %}
               </div>
           </section>
       {% endfor %}
-      </section>
-  {% else %}
-      <section>
-          {% if structure.slide.hastitle %}
-              <h4> {{ structure.slide.title }} </h4>
-          {% endif %}
-          <div class="container">
-              {% for content in structure.slide.render %}
-                  {%include "teach/slidestructurerender.html" %}
-              {% endfor %}
-          </div>
-      </section>
-  {% endif %}
-{% endfor %}
+
+      {% if element.multislide %}
+          </section>
+      {% endif %}
+    {% endfor %}
 {% endblock %}

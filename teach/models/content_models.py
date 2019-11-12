@@ -1,58 +1,45 @@
 from django.db import models
-import re
+from teach.core.render_content import FormatParser
 
 
 class ContentType(models.Model):
+    """
+    node
+    """
+    jelm_type = 'node'
     id = models.CharField(max_length=5,
                           primary_key=True)
     name = models.CharField(max_length=40)
     
     def __str__(self):
-        return "%s (%s)" % (self.name,
-                            self.id)
+        return self.id
 
 
 class Content(models.Model):
     """
     Content class, the basic building block for all courses
+    - node
     """
+    jelm_type = 'node'
     title = models.CharField(max_length=200)
     id = models.CharField(max_length=50,
                           primary_key=True)
     text = models.TextField(max_length=2000)
     
-    MARKUP_CHOICES = [('md', 'md'),
-                      ('html', 'html'),
-                      ('py', 'py'),
-                      ('iframe', 'iframe'),
-                      ('img', 'img')]
-    
-    markup = models.CharField(max_length=10,
-                              choices=MARKUP_CHOICES,
-                              default='md')
+    format = models.CharField(max_length=10,
+                              choices=[(x, x) for x in
+                                       FormatParser.format_choices],
+                              default=FormatParser.default_format)
     
     content_type = models.ForeignKey('ContentType',
                                      on_delete=models.SET_NULL,
                                      null=True)
 
-    # TODO: make room for content relations and possible citations
+    # TODO: possible citations
 
     def __str__(self):
 
         return "{}, {} - {} ({})".format(self.content_type,
-                                         self.markup,
+                                         self.format,
                                          self.title,
                                          self.id)
-
-    def remove_animation(self):
-        return re.sub(re.compile('<!--.*?-->'),
-                      '',
-                      str(self.text))
-
-    def upto_level(self, level):
-        out = self.text
-        for ss in [x[0] for x in 
-                   re.findall(re.compile('(\s*.*<!--.*?level=(\d+)*.*?-->)'),  # FIXME: this is probably wrong, test it
-                              str(self.text)) if float(x[1]) > level]:
-            out = out.replace(ss, "")
-        return out

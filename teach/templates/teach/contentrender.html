@@ -1,21 +1,3 @@
-{% if ss %}
-    {% if content.markup == "md" %}
-        <p data-markdown>
-{{ ss.render }}
-        </p>
-    {% elif content.markup == "iframe" %}
-        <iframe width="1000" height="600" frameborder="0" src="{{content.text}}"> </iframe>
-    {% elif content.markup == "img" %}
-        <img src="{{content.text}}">
-    {% endif %}
-{% else %}
-    {% if content.markup == "md" %}
-        <p data-markdown>
-{{ content.remove_animation }}
-        </p>
-    {% elif content.markup == "iframe" %}
-        <iframe width="1000" height="600" frameborder="0" src="{{content.text}}"> </iframe>
-    {% elif content.markup == "img" %}
-        <img src="{{content.text}}">
-    {% endif %}
-{% endif %}
+<p data-markdown>
+{{ slide_structure.render }}
+</p>

@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from teach.models.task_models import TaskAnswer, TaskList, UserSubmission
 
-from teach.utils import taskize_form
+from teach.util.utils import taskize_form
 
 
 @login_required

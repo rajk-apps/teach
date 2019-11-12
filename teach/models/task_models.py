@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 class TaskList(models.Model):
     """
     TaskList class
+    node
     """
+    jelm_type = 'node'
+
     id = models.CharField(max_length=30,
                           primary_key=True)
     name = models.CharField(max_length=150)
@@ -74,9 +77,13 @@ class TaskList(models.Model):
 
 
 class Task(models.Model):  # TODO: make this for programs/code/nice things
+    # TODO: make this inherit content type
     """
     Task class
+    node
     """
+    jelm_type = 'node'
+
     id = models.CharField(max_length=30,
                           primary_key=True)
     name = models.CharField(max_length=150)
@@ -121,6 +128,8 @@ class Task(models.Model):  # TODO: make this for programs/code/nice things
 
 class UserSubmission(models.Model):
 
+    jelm_type = 'edge'
+
     tasklist = models.ForeignKey(TaskList,
                                  on_delete=models.CASCADE)
     user = models.ForeignKey(User,
@@ -146,7 +155,9 @@ class UserSubmission(models.Model):
 
 
 class TaskAnswer(models.Model):
-    
+
+    jelm_type = 'node'
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     submission = models.ForeignKey(UserSubmission,

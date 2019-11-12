@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter
 def nested_list(nodes):
     if isinstance(nodes, list):

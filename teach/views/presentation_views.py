@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from teach.models.content_models import Content
 from teach.models.organization_models import Course, Lecture, Slide, Topic
 
-from teach.utils import add_to_level
+from teach.util import add_to_level
 
 
 # @login_required
@@ -23,7 +24,7 @@ def course_view(request, course_id):
                   in course_inst.content_types_selected.all()]
 
     topics = Topic.objects.filter(
-        content__in=Content.objects.filter(
+        related_contents__in=Content.objects.filter(
             slide__in=Slide.objects.filter(
                 lecture__in=Lecture.objects.filter(
                     coursestructure__in=course_structure)
@@ -68,7 +69,7 @@ def contentshow(request, course_id, type_id):
                             key=lambda x: x['o'])
     for content_dic in ordered_to_add:
         add_to_level(content_dic['c'],
-                     level1)
+                     level1, 'topic')
 
     return render(request, 'teach/contentshow.html',
                   {'level1': level1})
@@ -76,16 +77,17 @@ def contentshow(request, course_id, type_id):
 
 # @login_required
 def topicshow(request, topic_id):
-    contents = Content.objects.filter(topic__pk=topic_id).order_by('type')
+    contents = Content.objects.filter(topic__pk=topic_id).order_by('content_type')
     topic = get_object_or_404(Topic, id=topic_id)
     
     level1 = {'name': topic.name,
               'content': []}
-    
+
     for elem in contents:
         add_to_level(elem,
-                     level1)
-
+                     level1,
+                     'content_type')
+    print(level1)
     return render(request, 'teach/contentshow.html',
                   {'level1': level1})
 
@@ -94,22 +96,36 @@ def topicshow(request, topic_id):
 def slideshow(request, lecture_id):
     lecture = get_object_or_404(Lecture, id=lecture_id)
     prevo = -1
-    structures = []
+    elements = []
     for lstructure in lecture.lecturestructure_set.order_by(
                        'ordernum',
                        'subordernum'):
         if lstructure.multislide:
             if lstructure.ordernum == prevo:
-                structures[-1]['slides'].append(lstructure.slide)
+                elements[-1]['subslides'].append(lstructure.slide)
             else:
-                structures.append({'multislide': True,
-                                   'slides': [lstructure.slide]
-                                   })
+                elements.append({'multislide': True,
+                                 'subslides': [lstructure.slide]
+                                 })
         else:
-            structures.append({'multislide': False,
-                               'slide': lstructure.slide})
+            elements.append({'multislide': False,
+                             'subslides': [lstructure.slide]})
         prevo = lstructure.ordernum
     return render(request, 'teach/slideshow.html',
-                  {'lecture_title': lecture.title,
-                   'structures': structures
+                  {'title_slide': lecture.titleslide,
+                   'slideshow_title': lecture.title,
+                   'slideshow_elements': elements
+                   })
+
+
+@xframe_options_exempt
+def slide_view(request, slide_id):
+    slide = get_object_or_404(Slide, id=slide_id)
+    elements = [{'multislide': False,
+                'subslides': [slide]}]
+
+    return render(request, 'teach/slideshow.html',
+                  {'title_slide': False,
+                   'slideshow_title': slide.title,
+                   'slideshow_elements': elements
                    })

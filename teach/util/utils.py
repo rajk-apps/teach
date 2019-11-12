@@ -1,22 +1,38 @@
 from django import forms
+import json
+import os.path
+import re
+import ipykernel
+import requests
 
-from .models import TaskAnswer
+from urllib.parse import urljoin
+from notebook.notebookapp import list_running_servers
 
+from teach.models import TaskAnswer
 
-def add_to_level(elem, l1):
-    if l1['name'] == elem.type.name:
-        added = False
-        for l2 in l1['content']:
-            if l2['name'] == elem.topic.name:
-                if elem.id not in l2['eids']:
-                    l2['content'].append(elem)
-                    l2['eids'].append(elem.id)
-                added = True
-        if not added:
-            l1['content'].append({'name': elem.topic.name,
-                                  'description': elem.topic.description,
-                                  'content': [elem],
-                                  'eids': [elem.id]})
+nb_frame = {
+    'metadata': {
+        'kernelspec': {
+            'display_name': 'Python 3',
+            'language': 'python',
+            'name': 'python3'
+        },
+        'language_info': {
+            'codemirror_mode': {
+                'name': 'ipython',
+                'version': 3
+            },
+            'file_extension': '.py',
+            'mimetype': 'text/x-python',
+            'name': 'python',
+            'nbconvert_exporter': 'python',
+            'pygments_lexer': 'ipython3',
+            'version': '3.7.3'
+        }
+    },
+    'nbformat': 4,
+    'nbformat_minor': 2
+}
 
 
 def taskize_form(tasks):
@@ -60,3 +76,19 @@ def taskize_form(tasks):
         form.data = {'image': task.imagelink}
 
     return formset_out
+
+
+def get_notebook_name():
+    """
+    Return the full path of the jupyter notebook.
+    """
+    kernel_id = re.search('kernel-(.*).json',
+                          ipykernel.connect.get_connection_file()).group(1)
+    servers = list_running_servers()
+    for ss in servers:
+        response = requests.get(urljoin(ss['url'], 'api/sessions'),
+                                params={'token': ss.get('token', '')})
+        for nn in json.loads(response.text):
+            if nn['kernel']['id'] == kernel_id:
+                relative_path = nn['notebook']['path']
+                return os.path.join(ss['notebook_dir'], relative_path)

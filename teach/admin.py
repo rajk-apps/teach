@@ -5,13 +5,13 @@ from django.db import models as dbmodels
 
 # Register your models here.
 
-'''@admin.register(models.Course)
+@admin.register(models.Course)
 class CourseAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(models.Content)
 class ContentAdmin(admin.ModelAdmin):
-    ordering = ['topic','type','title']
+    #ordering = ['topic','type','title']
     #formfield_overrides = {
         #models.CharField: {'widget': TextInput(attrs={'size':'20'})},
         #dbmodels.TextField: {'widget': Textarea(attrs={'rows':20, 'cols':40})},
@@ -37,7 +37,7 @@ class SlideAdmin(admin.ModelAdmin):
 class CourseStructureAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(models.AdditionalContent)
+@admin.register(models.AdditionalLectureContent)
 class AddContentAdmin(admin.ModelAdmin):
     pass
 
@@ -67,4 +67,4 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 @admin.register(models.TaskAnswer)
 class TaskAnswerAdmin(admin.ModelAdmin):
-    pass'''
+    pass
