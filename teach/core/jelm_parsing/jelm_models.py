@@ -10,22 +10,23 @@ class NotJelmModelError(Exception):
 
 
 class TeachModelJelm:
-
     def __init__(self, teach_cls):
 
         try:
-            assert teach_cls.jelm_type in ['edge', 'node']
+            assert teach_cls.jelm_type in ["edge", "node"]
         except AttributeError:
             print("{} not a jelm model".format(teach_cls.__name__))
             raise NotJelmModelError(teach_cls.__name__)
         except AssertionError:
-            raise ValueError("unknown jelm_type {} in model {}"
-                             .format(teach_cls.jelm_type,
-                                     teach_cls.__name__))
+            raise ValueError(
+                "unknown jelm_type {} in model {}".format(
+                    teach_cls.jelm_type, teach_cls.__name__
+                )
+            )
 
         self.cls = teach_cls
         self.name = teach_cls.__name__.lower()
-        self.is_edge = self.cls.jelm_type == 'edge'
+        self.is_edge = self.cls.jelm_type == "edge"
 
         self.source_attid = None
         self.source_model = None
@@ -43,9 +44,9 @@ class TeachModelJelm:
 
         for attid, att in self.cls.__dict__.items():
 
-            if isinstance(att,
-                          models.fields.related_descriptors
-                                .ForwardManyToOneDescriptor):
+            if isinstance(
+                att, models.fields.related_descriptors.ForwardManyToOneDescriptor
+            ):
                 model_name = att.field.related_model.__name__.lower()
                 if self.source_attid is None:
                     self.source_attid = attid
@@ -61,30 +62,28 @@ class TeachModelJelm:
         for attid, att in self.cls.__dict__.items():
 
             target_model_name = None
-            if isinstance(att,
-                          models.fields.related_descriptors
-                                .ManyToManyDescriptor) & \
-                    (not attid.endswith('_set')):
+            if isinstance(
+                att, models.fields.related_descriptors.ManyToManyDescriptor
+            ) & (not attid.endswith("_set")):
 
                 target_model_name = att.rel.model.__name__.lower()
 
-            if isinstance(att,
-                          models.fields.related_descriptors
-                                .ForwardManyToOneDescriptor) & \
-                    (not attid.endswith('_set')):
+            if isinstance(
+                att, models.fields.related_descriptors.ForwardManyToOneDescriptor
+            ) & (not attid.endswith("_set")):
                 target_model_name = att.field.related_model.__name__.lower()
 
             if target_model_name:
-                self.additional_edges.append({'attid': attid,
-                                              'model': target_model_name})
+                self.additional_edges.append(
+                    {"attid": attid, "model": target_model_name}
+                )
 
 
 class TeachModelSet:
-
     def __init__(self):
 
         self.jelm_cls_dic = {}
-        for k, v in all_subclass_dic(models.Model, 'teach').items():
+        for k, v in all_subclass_dic(models.Model, "teach").items():
             try:
                 self.jelm_cls_dic[k] = TeachModelJelm(v)
             except NotJelmModelError:

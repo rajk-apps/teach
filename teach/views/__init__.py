@@ -11,5 +11,5 @@ import json
 def status(request):
     i = random.randint(5, 10)
     print(request.data)
-    return HttpResponse(json.dumps({'message': 'WAAAHEY{}'.format(i)}))
+    return HttpResponse(json.dumps({"message": "WAAAHEY{}".format(i)}))
     # return HttpResponse('<head><meta http-equiv="refresh" content="1"></head>A-{}'.format(i))

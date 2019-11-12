@@ -8,11 +8,9 @@ from .django_record_class import DjangoRecord
 
 def full_jelm_exporter():
 
-    django_dump = get_django_dump_of_app('teach')
+    django_dump = get_django_dump_of_app("teach")
 
-    el = Jelm(metadata={
-        'created': datetime.datetime.now().isoformat()
-    })
+    el = Jelm(metadata={"created": datetime.datetime.now().isoformat()})
     plus_edges = []
 
     for django_record_dic in django_dump:
@@ -41,7 +39,7 @@ def jelm_importer(jelm_dump):
 
     for e in later_edges:
         pass
-    #users = User.objects.filter(email__in=emails)
-    #instance = Setupuser.objects.create(organization=org)
+    # users = User.objects.filter(email__in=emails)
+    # instance = Setupuser.objects.create(organization=org)
 
-    #instance.emails_for_help.set(users)
+    # instance.emails_for_help.set(users)
