@@ -1,0 +1,24 @@
+{% if layout_tree.tag == "leaf" %}
+    <div style="{{ layout_tree.css_style }}" {% if layout_tree.leaf.fragment_no > 0 %} class="fragment" data-fragment-index="{{ layout_tree.leaf.fragment_no }}" {% endif %}>
+
+        {% with slide_structure=layout_tree.leaf template_name="teach/contentrender.html" %}
+
+        {% if slide_structure.print_title %}
+            <h4>{{ slide_structure.content.title }}</h4>
+        {% endif %}
+
+        <div style="{{ slide_structure.css_style }}">
+{% include template_name %}
+        </div>
+        {% endwith %}
+    </div>
+
+{% else %}
+    <div class="{{ layout_tree.tag }}" style="{{ layout_tree.style }}">
+        {% for child in layout_tree.children %}
+            {% with layout_tree=child template_name="teach/layout_tree_render.html" %}
+                {% include template_name %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+{% endif %}
