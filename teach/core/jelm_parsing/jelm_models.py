@@ -15,7 +15,7 @@ class TeachModelJelm:
         try:
             assert teach_cls.jelm_type in ["edge", "node"]
         except AttributeError:
-            print("{} not a jelm model".format(teach_cls.__name__))
+            # print("{} not a jelm model".format(teach_cls.__name__))
             raise NotJelmModelError(teach_cls.__name__)
         except AssertionError:
             raise ValueError(
