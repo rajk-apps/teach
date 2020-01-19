@@ -4,6 +4,10 @@ from setuptools import find_packages, setup
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
+with open("requirements.txt") as fp:
+    requirements = fp.read().strip().split()
+
+
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
@@ -18,6 +22,7 @@ setup(
     long_description=README,
     author='Endre Márk Borza',
     author_email='endremborza@gmail.com',
+    install_requires=requirements,
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
