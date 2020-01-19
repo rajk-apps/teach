@@ -3,3 +3,4 @@ jupyter
 requests==2.22.0
 jupyter_contrib_nbextensions
 jelm
+ipykernel
