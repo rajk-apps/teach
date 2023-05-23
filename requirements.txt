@@ -1,6 +1,6 @@
 django
 jupyter
-requests==2.22.0
+requests==2.31.0
 jupyter_contrib_nbextensions
 jelm
 ipykernel
